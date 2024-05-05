@@ -1,0 +1,45 @@
+version: '3.1'
+
+services:
+  treehole:
+    build: ../backend/
+    image: treehole_backend
+    container_name: treehole_backend
+    restart: always
+    ports: 
+      - "8088:8080"
+    links:
+      - mysql
+    depends_on: 
+      - mysql
+    networks:
+      - mynet
+    tty: true
+  mysql:
+    container_name: mysql
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "010420"
+    volumes: 
+      - ./docker-db/mysql:/var/lib/mysql
+      - ./docker-db/init:/docker-entrypoint-initdb.d/
+    ports: 
+      - "3306:3306"
+    networks:
+      - mynet
+  tomcat:
+    container_name: tomcat
+    image: tomcat
+    restart: always
+    volumes:
+      - ./docker-tomcat/conf:/usr/local/tomcat/conf
+      - ./docker-tomcat/logs:/usr/local/tomcat/logs
+      - ./docker-tomcat/webapps:/usr/local/tomcat/webapps
+    ports:
+      - "8081:8080"
+    networks:
+      - mynet
+networks:
+  mynet:
+      driver: bridge
