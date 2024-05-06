@@ -18,6 +18,7 @@ const NETWORK_ERROR = '网络错误，请联系开发人员'
  */
 request.interceptors.request.use((req) => {
   console.log('请求拦截器 =>', req)
+  req.headers.Authorization = 'bearer ' + localStorage.getItem("token")
   return req;
 }, (error) => {
   return Promise.reject(error);

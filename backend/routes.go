@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/controller"
+	"backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -30,6 +31,8 @@ func CollectRoute(env *gin.Engine) *gin.Engine {
 	//handler
 	env.POST("/user/signup", controller.Register)
 	env.POST("/user/login", controller.Login)
+
+	env.Use(utils.GetToken())
 	env.POST("/user/uploadAvatar", controller.UploadAvatar)
 	env.POST("/user/uploadBackground", controller.UploadBackground)
 	env.POST("/user/changePassword", controller.ChangePassword)

@@ -1,0 +1,2 @@
+172.19.0.1 - - [05/May/2024:07:54:51 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 200 165906
+172.19.0.1 - - [05/May/2024:07:54:51 +0000] "GET /favicon.ico HTTP/1.1" 200 21630

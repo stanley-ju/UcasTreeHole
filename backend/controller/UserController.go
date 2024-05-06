@@ -3,6 +3,7 @@ package controller
 import (
 	"backend/common"
 	"backend/model"
+	"backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -39,15 +40,25 @@ func Login(ctx *gin.Context) {
 	stu := model.StudentInfo{}
 	res := db.First(&stu, "student_number = ?", ctx.PostForm("student_number"))
 	if res.RowsAffected == 1 && stu.Password == ctx.PostForm("password") {
+		userToken, err := utils.SetToken(stu.StudentNumber)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"avatarURL":     "",
+				"backgroundURL": "",
+				"respMessage":   "fail",
+			})
+		}
 		ctx.JSON(http.StatusOK, gin.H{
 			"avatarURL":     stu.AvatarURL,
 			"backgroundURL": stu.BackgroundURL,
+			"token":         userToken,
 			"respMessage":   "success",
 		})
 	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"avatarURL":     "",
 			"backgroundURL": "",
+			"token":         "",
 			"respMessage":   "fail",
 		})
 	}

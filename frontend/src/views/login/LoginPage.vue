@@ -1,19 +1,19 @@
 <template>
   <el-row class="login-page">
     <el-col :span="6" :offset="3" class="form">
-      <el-form size="large" autocomplete="off" v-if="isRegister">
+      <el-form ref="registerForm" :rules="rules" :model="userInfo" size="large" autocomplete="off" v-if="isRegister">
         <el-form-item>
           <h1>注册</h1>
         </el-form-item>
-        <el-form-item>
-          <el-input :prefix-icon="User" placeholder="请输入用户名" v-model="username"></el-input>
+        <el-form-item prop="username">
+          <el-input :prefix-icon="User" placeholder="请输入用户名" v-model="userInfo.username"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input
             :prefix-icon="Lock"
             type="password"
             placeholder="请输入密码"
-            v-model="password"
+            v-model="userInfo.password"
           ></el-input>
         </el-form-item>
         <el-form-item>
@@ -28,25 +28,24 @@
         </el-form-item>
       </el-form>
       <!-- 登陆相关表单 -->
-      <el-form ref="form" size="large" autocomplete="off" v-else>
+      <el-form ref="loginForm" :rules="rules" :model="userInfo" size="large" autocomplete="off" v-else>
         <el-form-item>
           <h1>登录</h1>
         </el-form-item>
-        <el-form-item>
-          <el-input :prefix-icon="User" placeholder="请输入用户名" v-model="username"></el-input>
+        <el-form-item prop="username">
+          <el-input :prefix-icon="User" placeholder="请输入用户名" v-model="userInfo.username"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input
             name="password"
             :prefix-icon="Lock"
             type="password"
             placeholder="请输入密码"
-            v-model="password"
+            v-model="userInfo.password"
           ></el-input>
         </el-form-item>
         <el-form-item class="flex">
           <div class="flex">
-            <el-checkbox>记住我</el-checkbox>
             <el-link type="primary" :underline="false">忘记密码？</el-link>
           </div>
         </el-form-item>
@@ -65,10 +64,11 @@
  
 
 <script lang="ts">
-import { ref,defineComponent,reactive,toRefs, watch } from 'vue'
+import { ref,defineComponent,reactive, watch } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
 import { userLogin, userRegister } from '@/api/loginApi'
-import { loginRequest, registerRequest } from '@/types/type';
+import { loginRequest, registerRequest } from '@/types/type'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   setup(){
@@ -77,18 +77,38 @@ export default defineComponent({
       username: '',
       password: ''
     })
-    const userInfoRefs = toRefs(userInfo)
+    const router = useRouter()
+    const loginForm = ref(null)
+    const registerForm = ref(null)
+
+    const rules = reactive({
+      username: [
+        { required: true, message: '用户名不能为空', trigger: 'blur' }
+      ],
+      password: [
+        { required: true, message: '密码不能为空', trigger: 'blur' }
+      ],
+    })
 
     function Register(){
       const registerParam : registerRequest = {
         student_number: userInfo.username,
         password: userInfo.password
       }
-      userRegister(registerParam).then(response => {
-        console.log(response);
-      }).catch(error => {
-        console.error(error);
-        window.alert("账号已存在！")
+      registerForm.value.validate((valid:boolean)=>{
+        console.log(valid)
+        if(valid == true){
+          userRegister(registerParam).then(response => {
+            console.log(response)
+            localStorage.setItem("avatarUrl",response.avatarURL)
+            localStorage.setItem("backgroundUrl",response.backgroundURL)
+            router.push('/')
+            window.alert('注册成功,请登录！')
+          }).catch(error => {
+            console.error(error)
+            window.alert("账号已存在！")
+          })
+        }
       })
     }
 
@@ -97,12 +117,21 @@ export default defineComponent({
         student_number: userInfo.username,
         password: userInfo.password
       }
-      userLogin(loginParam).then(response => {
-        console.log(response);
-      }).catch(error => {
-        console.error(error);
-        window.alert("用户名或密码错误！")
-        userInfo.password = ''
+      loginForm.value.validate((valid:boolean)=>{
+        console.log(valid)
+        if(valid == true){
+          userLogin(loginParam).then(response => {
+            console.log(response)
+            localStorage.setItem("avatarUrl",response.avatarURL)
+            localStorage.setItem("backgroundUrl",response.backgroundURL)
+            localStorage.setItem("token",response.token)
+            router.push('/posts')
+          }).catch(error => {
+            console.error(error)
+            window.alert("用户名或密码错误！")
+            userInfo.password = ''
+          })  
+        }
       })
     }
 
@@ -117,7 +146,10 @@ export default defineComponent({
       Lock,
       Register,
       Login,
-      ...userInfoRefs
+      rules,
+      loginForm,
+      registerForm,
+      userInfo,
     }
   },
   name: 'LoginPage',
