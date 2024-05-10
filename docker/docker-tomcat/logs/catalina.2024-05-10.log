@@ -368,3 +368,7 @@
 10-May-2024 14:35:45.866 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/usr/local/tomcat/webapps/ROOT] has finished in [99] ms
 10-May-2024 14:35:45.868 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
 10-May-2024 14:35:45.874 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [3400] milliseconds
+10-May-2024 14:56:18.280 INFO [Thread-1] org.apache.coyote.AbstractProtocol.pause Pausing ProtocolHandler ["http-nio-8080"]
+10-May-2024 14:56:18.282 INFO [Thread-1] org.apache.catalina.core.StandardService.stopInternal Stopping service [Catalina]
+10-May-2024 14:56:18.294 INFO [Thread-1] org.apache.coyote.AbstractProtocol.stop Stopping ProtocolHandler ["http-nio-8080"]
+10-May-2024 14:56:18.305 INFO [Thread-1] org.apache.coyote.AbstractProtocol.destroy Destroying ProtocolHandler ["http-nio-8080"]
