@@ -34,7 +34,6 @@ func CollectRoute(env *gin.Engine) *gin.Engine {
 
 	env.Use(utils.GetToken())
 	env.POST("/user/uploadAvatar", controller.UploadAvatar)
-	env.POST("/user/uploadBackground", controller.UploadBackground)
 	env.POST("/user/changePassword", controller.ChangePassword)
 	env.POST("/user/queryStudentInfo", controller.QueryStudentInfo)
 
@@ -47,8 +46,5 @@ func CollectRoute(env *gin.Engine) *gin.Engine {
 	env.POST("/treehole/queryFavoritePost", controller.QueryFavoritePost)
 	env.POST("/treehole/queryPostWithKeyword", controller.QueryPostWithKeyword)
 
-	env.POST("/treehole/todoCreate", controller.TodoCreate)
-	env.POST("/treehole/todoQueryAll", controller.TodoQueryAll)
-	env.POST("/treehole/todoUpdate", controller.TodoUpdate)
 	return env
 }

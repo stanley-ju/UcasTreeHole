@@ -33,7 +33,6 @@ func InitDB() *gorm.DB {
 	db.AutoMigrate(&model.TreeholePost{})
 	db.AutoMigrate(&model.PostComment{})
 	db.AutoMigrate(&model.FavourPost{})
-	db.AutoMigrate(&model.Todo{})
 
 	DB = db
 	return db

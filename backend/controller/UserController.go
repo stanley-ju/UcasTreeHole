@@ -15,22 +15,19 @@ func Register(ctx *gin.Context) {
 		StudentNumber: ctx.PostForm("student_number"),
 		Password:      ctx.PostForm("password"),
 		AvatarURL:     "tomcat:8080/statics/imgs/initAvatar.jpg",
-		BackgroundURL: "tomcat:8080/statics/imgs/initBackground.jpg",
 	}
 	var stu model.StudentInfo
 	res := db.First(&stu, "student_number = ?", ctx.PostForm("student_number"))
 	if res.RowsAffected == 0 {
 		db.Create(&newStu)
 		ctx.JSON(http.StatusOK, gin.H{
-			"avatarURL":     newStu.AvatarURL,
-			"backgroundURL": newStu.BackgroundURL,
-			"respMessage":   "success",
+			"avatarURL":   newStu.AvatarURL,
+			"respMessage": "success",
 		})
 	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"avatarURL":     "",
-			"backgroundURL": "",
-			"respMessage":   "用户已存在，注册失败！",
+			"avatarURL":   "",
+			"respMessage": "用户已存在，注册失败！",
 		})
 	}
 }
@@ -43,23 +40,20 @@ func Login(ctx *gin.Context) {
 		userToken, err := utils.SetToken(stu.StudentNumber)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"avatarURL":     "",
-				"backgroundURL": "",
-				"respMessage":   "token保存失败！",
+				"avatarURL":   "",
+				"respMessage": "token保存失败！",
 			})
 		}
 		ctx.JSON(http.StatusOK, gin.H{
-			"avatarURL":     stu.AvatarURL,
-			"backgroundURL": stu.BackgroundURL,
-			"token":         userToken,
-			"respMessage":   "success",
+			"avatarURL":   stu.AvatarURL,
+			"token":       userToken,
+			"respMessage": "success",
 		})
 	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"avatarURL":     "",
-			"backgroundURL": "",
-			"token":         "",
-			"respMessage":   "用户名或密码错误！",
+			"avatarURL":   "",
+			"token":       "",
+			"respMessage": "用户名或密码错误！",
 		})
 	}
 }
@@ -82,29 +76,6 @@ func UploadAvatar(ctx *gin.Context) {
 
 		ctx.JSON(http.StatusOK, gin.H{
 			"avatarURL":   avatar_url,
-			"respMessage": "success",
-		})
-	}
-}
-
-func UploadBackground(ctx *gin.Context) {
-	avatar, err := ctx.FormFile("background")
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"backgroundURL": "",
-			"respMessage":   "fail",
-		})
-	} else {
-		stuNum := ctx.PostForm("student_number")
-		filepath := "../imgs/background_" + stuNum + ".jpg"
-		background_url := "tomcat:8080/statics/imgs/background_" + stuNum + ".jpg"
-		ctx.SaveUploadedFile(avatar, filepath)
-
-		db := common.GetDB()
-		db.Model(&model.StudentInfo{}).Where("student_number = ?", stuNum).Update("background_url", background_url)
-
-		ctx.JSON(http.StatusOK, gin.H{
-			"avatarURL":   background_url,
 			"respMessage": "success",
 		})
 	}
@@ -147,9 +118,8 @@ func QueryStudentInfo(ctx *gin.Context) {
 		})
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{
-			"avatarURL":     user.AvatarURL,
-			"backgroundURL": user.BackgroundURL,
-			"respMessage":   "success",
+			"avatarURL":   user.AvatarURL,
+			"respMessage": "success",
 		})
 	}
 }
