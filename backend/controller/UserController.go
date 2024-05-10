@@ -30,7 +30,7 @@ func Register(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"avatarURL":     "",
 			"backgroundURL": "",
-			"respMessage":   "fail",
+			"respMessage":   "用户已存在，注册失败！",
 		})
 	}
 }
@@ -45,7 +45,7 @@ func Login(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"avatarURL":     "",
 				"backgroundURL": "",
-				"respMessage":   "fail",
+				"respMessage":   "token保存失败！",
 			})
 		}
 		ctx.JSON(http.StatusOK, gin.H{
@@ -59,7 +59,7 @@ func Login(ctx *gin.Context) {
 			"avatarURL":     "",
 			"backgroundURL": "",
 			"token":         "",
-			"respMessage":   "fail",
+			"respMessage":   "用户名或密码错误！",
 		})
 	}
 }
@@ -69,7 +69,7 @@ func UploadAvatar(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"avatarURL":   "",
-			"respMessage": "fail",
+			"respMessage": "头像上传失败！",
 		})
 	} else {
 		stuNum := ctx.PostForm("student_number")
@@ -143,7 +143,7 @@ func QueryStudentInfo(ctx *gin.Context) {
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"respMessage": "fail",
+			"respMessage": "查询个人信息失败！",
 		})
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{

@@ -13,7 +13,6 @@ func main() {
 		panic("failed to connect database,err: " + err.Error())
 	}
 	env := gin.Default()
-	env.Static("/statics", "../statics")
 	env = CollectRoute(env)
 	defer sqlDB.Close()
 	panic(env.Run(":8080"))

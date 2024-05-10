@@ -1,0 +1,26 @@
+172.22.0.1 - - [09/May/2024:06:57:24 +0000] "GET /statics/imgs/initBackground.jpg HTTP/1.1" 200 665272
+172.22.0.1 - - [09/May/2024:06:57:24 +0000] "GET /favicon.ico HTTP/1.1" 200 21630
+172.22.0.1 - - [09/May/2024:12:01:40 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:25:31 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:26:11 +0000] "-" 400 2219
+172.22.0.1 - - [09/May/2024:12:26:11 +0000] "-" 400 2227
+172.22.0.1 - - [09/May/2024:12:26:36 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:27:49 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:28:17 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:28:49 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:28:55 +0000] "GET /statics/imgs/ HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:28:58 +0000] "GET /statics/imgs/ HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:29:06 +0000] "GET /statics/imgs/ HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:29:26 +0000] "GET /statics/imgs/background_1900012997.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:29:29 +0000] "GET /statics/imgs/background_1900012997.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:29:57 +0000] "GET /statics/imgs/background_1900012997.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:30:03 +0000] "GET /statics/imgs/background_1900012997.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:30:14 +0000] "GET /statics/ HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:30:20 +0000] "GET /statics/imgs/background_1900012997.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:31:33 +0000] "GET /statics/imgs/initBackground.jpg HTTP/1.1" 404 649
+172.22.0.1 - - [09/May/2024:12:36:03 +0000] "GET /statics/imgs/initBackground.jpg HTTP/1.1" 200 665272
+172.22.0.1 - - [09/May/2024:12:36:03 +0000] "GET /favicon.ico HTTP/1.1" 200 21630
+172.22.0.1 - - [09/May/2024:12:36:09 +0000] "GET /statics/imgs/init HTTP/1.1" 404 742
+172.22.0.1 - - [09/May/2024:12:36:14 +0000] "GET /statics/imgs/init HTTP/1.1" 404 742
+172.22.0.1 - - [09/May/2024:12:36:19 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 200 165906
+172.22.0.1 - - [09/May/2024:12:37:18 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 200 165906

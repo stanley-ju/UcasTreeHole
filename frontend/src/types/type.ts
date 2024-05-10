@@ -8,7 +8,14 @@ export interface registerRequest {
     password: string
 }
 
-export interface ResponseData<T> {
-    data: T;
-    respMessage: string;
+export interface queryPostRequest {
+    student_number: string,
+    startIndex: string,
+    postNum: string
+}
+
+export interface submitPostRequest {
+    student_number: string,
+    content: string,
+    quoteId: string
 }

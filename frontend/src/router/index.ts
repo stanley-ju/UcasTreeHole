@@ -21,23 +21,24 @@ const router = createRouter({
 })
 
 function hasToken() {
-  // 这里应该是实际检查token的逻辑，例如从localStorage或cookie中获取
   return localStorage.getItem('token') ? true : false;
 }
 
-// 路由守卫
+//璺敱瀹堝崼
 router.beforeEach((to, from, next) => {
-  if (to.path === '/') {
-    if (hasToken()) {
-      // 如果有token，跳转到/index
-      next('/posts');
-    } else {
-      // 如果没有token，跳转到/login
-      next('/login');
+  if (hasToken()){
+    if(to.path === '/' || to.path === '/login'){
+      next('/posts')
+    }else{
+      next()
     }
-  } else {
-    // 其他路由正常跳转
-    next();
+  }else{
+    if(to.path === '/login'){
+      next()
+    }else{
+      next('/login')
+    }
+
   }
 });
 

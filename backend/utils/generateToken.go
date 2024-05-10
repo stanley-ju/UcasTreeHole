@@ -52,10 +52,10 @@ func GetToken() gin.HandlerFunc {
 
 		// 判断如果没有token
 		if tokenString == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"code": 401, "msg": "您未登录"})
+			ctx.JSON(http.StatusUnauthorized, gin.H{"respMessage": "您未登录"})
 			// 中间件中使用next()就执行下一步，如果执行abort()就不会执行下一步
 			ctx.Abort()
-			// return
+			return
 		}
 
 		// 去除authorization中的"bearer"
@@ -67,9 +67,9 @@ func GetToken() gin.HandlerFunc {
 		// 判断token是否失效
 		token, claims, err := ParseToken(tokenString)
 		if err != nil || !token.Valid {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"code": 401, "msg": "权限失效，请重新登录"})
+			ctx.JSON(http.StatusUnauthorized, gin.H{"respMessage": "权限失效，请重新登录"})
 			ctx.Abort()
-			// return
+			return
 		}
 
 		// 打印userid，既然定义这个值就必须使用，留下来以备以后的需要

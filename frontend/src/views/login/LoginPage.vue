@@ -66,9 +66,19 @@
 <script lang="ts">
 import { ref,defineComponent,reactive, watch } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
-import { userLogin, userRegister } from '@/api/loginApi'
+import { axiosPostApi } from '@/api/api'
 import { loginRequest, registerRequest } from '@/types/type'
 import { useRouter } from 'vue-router'
+import { userStore } from '@/store/store'
+
+function updateUrl(url:string){
+  if (url.includes('/')) {
+      const index = url.indexOf('/');
+      return 'http://localhost:8081' + url.substring(index);
+    } else {
+      return url;
+    }
+}
 
 export default defineComponent({
   setup(){
@@ -98,15 +108,12 @@ export default defineComponent({
       registerForm.value.validate((valid:boolean)=>{
         console.log(valid)
         if(valid == true){
-          userRegister(registerParam).then(response => {
-            console.log(response)
-            localStorage.setItem("avatarUrl",response.avatarURL)
-            localStorage.setItem("backgroundUrl",response.backgroundURL)
+          axiosPostApi(registerParam,'/user/signup').then(response => {
+            localStorage.setItem("avatarUrl",updateUrl(response.avatarURL))
+            localStorage.setItem("backgroundUrl",updateUrl(response.backgroundURL))
             router.push('/')
-            window.alert('注册成功,请登录！')
           }).catch(error => {
             console.error(error)
-            window.alert("账号已存在！")
           })
         }
       })
@@ -118,17 +125,15 @@ export default defineComponent({
         password: userInfo.password
       }
       loginForm.value.validate((valid:boolean)=>{
-        console.log(valid)
         if(valid == true){
-          userLogin(loginParam).then(response => {
-            console.log(response)
-            localStorage.setItem("avatarUrl",response.avatarURL)
-            localStorage.setItem("backgroundUrl",response.backgroundURL)
+          axiosPostApi(loginParam,'/user/login').then(response => {
+            userStore().userId = userInfo.username
+            localStorage.setItem("avatarUrl",updateUrl(response.avatarURL))
+            localStorage.setItem("backgroundUrl",updateUrl(response.backgroundURL))
             localStorage.setItem("token",response.token)
             router.push('/posts')
           }).catch(error => {
-            console.error(error)
-            window.alert("用户名或密码错误！")
+            console.log(error)
             userInfo.password = ''
           })  
         }
