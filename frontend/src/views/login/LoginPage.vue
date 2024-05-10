@@ -110,7 +110,6 @@ export default defineComponent({
         if(valid == true){
           axiosPostApi(registerParam,'/user/signup').then(response => {
             localStorage.setItem("avatarUrl",updateUrl(response.avatarURL))
-            localStorage.setItem("backgroundUrl",updateUrl(response.backgroundURL))
             router.push('/')
           }).catch(error => {
             console.error(error)
@@ -129,7 +128,6 @@ export default defineComponent({
           axiosPostApi(loginParam,'/user/login').then(response => {
             userStore().userId = userInfo.username
             localStorage.setItem("avatarUrl",updateUrl(response.avatarURL))
-            localStorage.setItem("backgroundUrl",updateUrl(response.backgroundURL))
             localStorage.setItem("token",response.token)
             router.push('/posts')
           }).catch(error => {
