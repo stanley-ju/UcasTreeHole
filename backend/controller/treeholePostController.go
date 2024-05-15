@@ -14,6 +14,7 @@ type posts struct {
 	PostId      int    `json:"postId"`
 	SenderId    string `json:"senderId"`
 	SendTime    int64  `json:"sendTime"`
+	LikeNum     int    `json:"likeNum"`
 	FavourNum   int    `json:"favourNum"`
 	Content     string `json:"content"`
 	QuoteId     int    `json:"quoteId"`
@@ -38,18 +39,21 @@ func convert_post(c model.TreeholePost, studentNumber string) posts {
 	res.Content = c.Content
 	res.QuoteId = c.QuoteId
 	res.FavourNum = c.FavourNum
+	res.LikeNum = c.LikeNum
 	res.CommentList = []comments{}
 
 	db := common.GetDB()
 	Comments := []model.PostComment{}
 	db.Where("post_id = ?", res.PostId).Find(&Comments)
 
-	favour := model.FavourPost{}
+	favour := []model.FavourPost{}
 	result := db.Where("student_number = ? and post_id = ?", studentNumber, res.PostId).Find(&favour)
 	if result.RowsAffected == 0 {
-		res.IsFavour = "false"
-	} else {
-		res.IsFavour = "true"
+		res.IsFavour = "none"
+	} else if result.RowsAffected == 2 {
+		res.IsFavour = "both"
+	} else if result.RowsAffected == 1 {
+		res.IsFavour = favour[0].FavorType
 	}
 
 	for i := range Comments {
@@ -158,10 +162,12 @@ func FavoritePost(ctx *gin.Context) {
 	db := common.GetDB()
 	studentId := ctx.PostForm("student_number")
 	id, _ := strconv.Atoi(ctx.PostForm("postId"))
+	favorType := ctx.PostForm("type")
 
 	favour := model.FavourPost{
 		StudentNumber: studentId,
 		PostId:        id,
+		FavorType:     favorType,
 	}
 
 	res := db.Create(&favour)
@@ -173,7 +179,11 @@ func FavoritePost(ctx *gin.Context) {
 	} else {
 		p := model.TreeholePost{}
 		db.Where("id = ?", id).Find(&p)
-		p.FavourNum += 1
+		if favorType == "favor" {
+			p.FavourNum += 1
+		} else {
+			p.LikeNum += 1
+		}
 		db.Save(&p)
 		ctx.JSON(http.StatusOK, gin.H{
 			"respMessage": "success",
@@ -185,8 +195,9 @@ func CancelFavoritePost(ctx *gin.Context) {
 	db := common.GetDB()
 	studentId := ctx.PostForm("student_number")
 	id, _ := strconv.Atoi(ctx.PostForm("postId"))
+	favorType := ctx.PostForm("type")
 
-	res := db.Where("student_number = ? and post_id = ?", studentId, id).Delete(&model.FavourPost{})
+	res := db.Where("student_number = ? and post_id = ? and favor_type = ?", studentId, id, favorType).Delete(&model.FavourPost{})
 
 	if res.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -195,7 +206,11 @@ func CancelFavoritePost(ctx *gin.Context) {
 	} else {
 		p := model.TreeholePost{}
 		db.Where("id = ?", id).Find(&p)
-		p.FavourNum -= 1
+		if favorType == "favor" {
+			p.FavourNum -= 1
+		} else {
+			p.LikeNum -= 1
+		}
 		db.Save(&p)
 		ctx.JSON(http.StatusOK, gin.H{
 			"respMessage": "success",

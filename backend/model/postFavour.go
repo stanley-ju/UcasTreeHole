@@ -6,6 +6,7 @@ type FavourPost struct {
 	gorm.Model
 	PostId        int    `gorm:"int"`
 	StudentNumber string `gorm:"varchar(255)"`
+	FavorType     string `gorm:"varchar(255)"`
 }
 
 func (FavourPost) TableName() string {

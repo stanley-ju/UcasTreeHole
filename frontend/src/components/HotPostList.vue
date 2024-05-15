@@ -1,5 +1,5 @@
 <template>
-    <div>近一天/一周/一月 热榜帖子列表 浏览量top10 收藏量top10 评论量top10</div>
+    <div>近一天/一周/一月 热榜帖子列表 点赞量top10 收藏量top10 评论量top10</div>
 </template>
     
     
