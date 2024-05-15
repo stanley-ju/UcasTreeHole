@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	//gin.SetMode(gin.ReleaseMode)
 	db := common.InitDB()
 	sqlDB, err := db.DB()
 	if err != nil {

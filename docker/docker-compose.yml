@@ -8,8 +8,6 @@ services:
     restart: always
     ports: 
       - "8088:8080"
-    links:
-      - mysql
     depends_on: 
       - mysql
     networks:
