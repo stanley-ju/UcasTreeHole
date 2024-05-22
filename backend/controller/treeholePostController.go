@@ -11,15 +11,16 @@ import (
 )
 
 type posts struct {
-	PostId      int    `json:"postId"`
-	SenderId    string `json:"senderId"`
-	SendTime    int64  `json:"sendTime"`
-	LikeNum     int    `json:"likeNum"`
-	FavourNum   int    `json:"favourNum"`
-	Content     string `json:"content"`
-	QuoteId     int    `json:"quoteId"`
-	IsFavour    string `json:"isFavour"`
-	CommentList []comments
+	PostId       int        `json:"postId"`
+	SenderId     string     `json:"senderId"`
+	SendTime     int64      `json:"sendTime"`
+	LikeNum      int        `json:"likeNum"`
+	FavourNum    int        `json:"favourNum"`
+	Content      string     `json:"content"`
+	QuoteId      int        `json:"quoteId"`
+	IsFavour     string     `json:"isFavour"`
+	ImageUrlList string     `json:"imageUrlList"`
+	CommentList  []comments `json:"commentList"`
 }
 
 type comments struct {
@@ -31,7 +32,7 @@ type comments struct {
 	ReplyId   int    `json:"replyId"`
 }
 
-func convert_post(c model.TreeholePost, studentNumber string) posts {
+func convertPost(c model.TreeholePost, studentNumber string) posts {
 	res := posts{}
 	res.PostId = int(c.ID)
 	res.SenderId = c.SenderId
@@ -40,13 +41,14 @@ func convert_post(c model.TreeholePost, studentNumber string) posts {
 	res.QuoteId = c.QuoteId
 	res.FavourNum = c.FavourNum
 	res.LikeNum = c.LikeNum
+	res.ImageUrlList = c.ImageUrlList
 	res.CommentList = []comments{}
 
 	db := common.GetDB()
-	Comments := []model.PostComment{}
+	var Comments []model.PostComment
 	db.Where("post_id = ?", res.PostId).Find(&Comments)
 
-	favour := []model.FavourPost{}
+	var favour []model.FavourPost
 	result := db.Where("student_number = ? and post_id = ?", studentNumber, res.PostId).Find(&favour)
 	if result.RowsAffected == 0 {
 		res.IsFavour = "none"
@@ -57,12 +59,12 @@ func convert_post(c model.TreeholePost, studentNumber string) posts {
 	}
 
 	for i := range Comments {
-		res.CommentList = append(res.CommentList, convert_comment(Comments[i]))
+		res.CommentList = append(res.CommentList, convertComment(Comments[i]))
 	}
 	return res
 }
 
-func convert_comment(c model.PostComment) comments {
+func convertComment(c model.PostComment) comments {
 	res := comments{}
 	res.PostId = c.PostId
 	res.SenderId = c.SenderId
@@ -75,21 +77,45 @@ func convert_comment(c model.PostComment) comments {
 
 func SubmitPost(ctx *gin.Context) {
 	db := common.GetDB()
-	pos := &model.TreeholePost{}
-	pos.SenderId = ctx.PostForm("student_number")
-	pos.Content = ctx.PostForm("content")
-	pos.QuoteId, _ = strconv.Atoi(ctx.PostForm("quoteId"))
-	pos.SendTime = time.Now().Unix()
+	post := &model.TreeholePost{}
+	post.SenderId = ctx.PostForm("student_number")
+	post.Content = ctx.PostForm("content")
+	post.QuoteId, _ = strconv.Atoi(ctx.PostForm("quoteId"))
+	post.SendTime = time.Now().Unix()
 
-	res := db.Create(pos)
+	res := db.Create(post)
 	if res.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"respMessage": "fail",
+			"respMessage": "fail to create post",
 		})
 	} else {
-		ctx.JSON(http.StatusOK, gin.H{
-			"respMessage": "success",
-		})
+		form, _ := ctx.MultipartForm()
+		files := form.File["file"]
+		for _, file := range files {
+			file.Filename = strconv.Itoa(int(post.ID)) + "_" + file.Filename
+
+			imgUrl := "http://localhost:8081/statics/imgs/"
+			err := ctx.SaveUploadedFile(file, "./imgs/"+file.Filename)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{
+					"respMessage": "fail to upload file",
+				})
+				db.Delete(post)
+				return
+			}
+
+			post.ImageUrlList += imgUrl + file.Filename + ";"
+		}
+		res = db.Save(post)
+		if res.Error != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"respMessage": "fail to save post",
+			})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{
+				"respMessage": "success",
+			})
+		}
 	}
 }
 
@@ -115,8 +141,8 @@ func CommentPost(ctx *gin.Context) {
 
 func QueryPost(ctx *gin.Context) {
 	db := common.GetDB()
-	treeholePosts := []model.TreeholePost{}
-	resp := []posts{}
+	var treeholePosts []model.TreeholePost
+	var resp []posts
 	startIndex, _ := strconv.Atoi(ctx.PostForm("startIndex"))
 	studentNumber := ctx.PostForm("student_number")
 	postNum, _ := strconv.Atoi(ctx.PostForm("postNum"))
@@ -128,7 +154,7 @@ func QueryPost(ctx *gin.Context) {
 		})
 	} else {
 		for i := range treeholePosts {
-			resp = append(resp, convert_post(treeholePosts[i], studentNumber))
+			resp = append(resp, convertPost(treeholePosts[i], studentNumber))
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
@@ -148,12 +174,12 @@ func QuerySinglePost(ctx *gin.Context) {
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"respMessage": "fail",
-			"singlePost":  convert_post(singlePost, studentNumber),
+			"singlePost":  convertPost(singlePost, studentNumber),
 		})
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{
 			"respMessage": "success",
-			"singlePost":  convert_post(singlePost, studentNumber),
+			"singlePost":  convertPost(singlePost, studentNumber),
 		})
 	}
 }
@@ -224,15 +250,15 @@ func QueryFavoritePost(ctx *gin.Context) {
 	startIndex, _ := strconv.Atoi(ctx.PostForm("startIndex"))
 	postNum, _ := strconv.Atoi(ctx.PostForm("postNum"))
 
-	favourId := []int{}
-	favour := []model.FavourPost{}
+	var favourId []int
+	var favour []model.FavourPost
 	db.Where("student_number = ?", studentNumber).Find(&favour)
 	for i := range favour {
 		favourId = append(favourId, favour[i].PostId)
 	}
 
-	favourPosts := []model.TreeholePost{}
-	resp := []posts{}
+	var favourPosts []model.TreeholePost
+	var resp []posts
 
 	result := db.Where("id in ?", favourId).Order("id desc").Limit(postNum).Offset(startIndex - 1).Find(&favourPosts)
 
@@ -243,7 +269,7 @@ func QueryFavoritePost(ctx *gin.Context) {
 		})
 	} else {
 		for i := range favourPosts {
-			resp = append(resp, convert_post(favourPosts[i], studentNumber))
+			resp = append(resp, convertPost(favourPosts[i], studentNumber))
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
@@ -255,8 +281,8 @@ func QueryFavoritePost(ctx *gin.Context) {
 
 func QueryPostWithKeyword(ctx *gin.Context) {
 	db := common.GetDB()
-	treeholePosts := []model.TreeholePost{}
-	resp := []posts{}
+	var treeholePosts []model.TreeholePost
+	var resp []posts
 	startIndex, _ := strconv.Atoi(ctx.PostForm("startIndex"))
 	postNum, _ := strconv.Atoi(ctx.PostForm("postNum"))
 	studentNumber := ctx.PostForm("student_number")
@@ -265,16 +291,115 @@ func QueryPostWithKeyword(ctx *gin.Context) {
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"respMessage": "fail",
-			"postList":    treeholePosts,
+			"postList":    []posts{},
 		})
 	} else {
 		for i := range treeholePosts {
-			resp = append(resp, convert_post(treeholePosts[i], studentNumber))
+			resp = append(resp, convertPost(treeholePosts[i], studentNumber))
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
 			"respMessage": "success",
 			"postList":    resp,
+		})
+	}
+}
+
+//todo 测试以下新增接口的正确性
+
+func QueryHotPost(ctx *gin.Context) {
+	db := common.GetDB()
+	var treeholePosts []model.TreeholePost
+	var resp []posts
+	studentNumber := ctx.PostForm("student_number")
+	postType := ctx.PostForm("type")
+	duration := ctx.PostForm("duration")
+	var timeAgo time.Time
+	if duration == "day" {
+		timeAgo = time.Now().AddDate(0, 0, -1)
+	} else if duration == "week" {
+		timeAgo = time.Now().AddDate(0, 0, -7)
+	} else if duration == "month" {
+		timeAgo = time.Now().AddDate(0, -1, 0)
+	}
+
+	result := db.Where("created_at >= ?", timeAgo).Order(postType + " desc").Limit(10).Find(&treeholePosts)
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"respMessage": "fail",
+			"postList":    []posts{},
+		})
+	} else {
+		for i := range treeholePosts {
+			resp = append(resp, convertPost(treeholePosts[i], studentNumber))
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"respMessage": "success",
+			"postList":    resp,
+		})
+	}
+}
+
+func QueryUserPost(ctx *gin.Context) {
+	db := common.GetDB()
+	var treeholePosts []model.TreeholePost
+	var resp []posts
+	studentNumber := ctx.PostForm("student_number")
+	result := db.Where("sender_id = ?", studentNumber).Find(&treeholePosts)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"respMessage": "fail",
+			"postList":    []posts{},
+		})
+	} else {
+		for i := range treeholePosts {
+			resp = append(resp, convertPost(treeholePosts[i], studentNumber))
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"respMessage": "success",
+			"postList":    resp,
+		})
+	}
+}
+
+func DeleteUserPost(ctx *gin.Context) {
+	db := common.GetDB()
+	studentNumber := ctx.PostForm("student_number")
+	postId := ctx.PostForm("postId")
+
+	post := model.TreeholePost{}
+
+	result := db.Where("id = ? and sender_id = ?", postId, studentNumber).Delete(&post)
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"respMessage": "fail",
+		})
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{
+			"respMessage": "success",
+		})
+	}
+}
+
+func DeleteUserComment(ctx *gin.Context) {
+	db := common.GetDB()
+	studentNumber := ctx.PostForm("student_number")
+	commentId := ctx.PostForm("commentId")
+
+	comment := model.PostComment{}
+
+	result := db.Where("id = ? and sender_id = ?", commentId, studentNumber).Delete(&comment)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"respMessage": "fail",
+		})
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{
+			"respMessage": "success",
 		})
 	}
 }

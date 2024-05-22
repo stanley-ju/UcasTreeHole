@@ -45,6 +45,9 @@ func CollectRoute(env *gin.Engine) *gin.Engine {
 	env.POST("/treehole/cancelFavoritePost", controller.CancelFavoritePost)
 	env.POST("/treehole/queryFavoritePost", controller.QueryFavoritePost)
 	env.POST("/treehole/queryPostWithKeyword", controller.QueryPostWithKeyword)
-
+	env.POST("/treehole/queryHotPost", controller.QueryHotPost)
+	env.POST("/treehole/queryUserPost", controller.QueryUserPost)
+	env.POST("/treehole/deleteUserPost", controller.DeleteUserPost)
+	env.POST("/treehole/deleteUserComment", controller.DeleteUserComment)
 	return env
 }

@@ -6,6 +6,8 @@ services:
     image: treehole_backend
     container_name: treehole_backend
     restart: always
+    volumes:
+      - ./docker-tomcat/webapps/ROOT/statics/imgs:/go/treehole/backend/imgs
     ports: 
       - "8088:8080"
     depends_on: 

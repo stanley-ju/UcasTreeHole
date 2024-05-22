@@ -17,5 +17,6 @@ export interface queryPostRequest {
 export interface submitPostRequest {
     student_number: string,
     content: string,
-    quoteId: string
+    quoteId: string,
+    file: any[]
 }

@@ -69,7 +69,13 @@ func UploadAvatar(ctx *gin.Context) {
 		stuNum := ctx.PostForm("student_number")
 		filepath := "../imgs/avatar_" + stuNum + ".jpg"
 		avatar_url := "tomcat:8080/statics/imgs/avatar_" + stuNum + ".jpg"
-		ctx.SaveUploadedFile(avatar, filepath)
+		err = ctx.SaveUploadedFile(avatar, filepath)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"avatarURL":   "",
+				"respMessage": "fail to save avatar",
+			})
+		}
 
 		db := common.GetDB()
 		db.Model(&model.StudentInfo{}).Where("student_number = ?", stuNum).Update("avatar_url", avatar_url)
