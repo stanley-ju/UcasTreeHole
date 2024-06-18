@@ -20,3 +20,40 @@ export interface submitPostRequest {
     quoteId: string,
     file: any[]
 }
+
+export interface favoritePostRequest {
+    student_number: string,
+    postId: string,
+    favorType: string
+}
+
+export interface submitCommentRequest {
+    student_number: string,
+    postId: string,
+    content: string,
+    replyId: string
+}
+
+export interface querySinglePostRequest {
+    student_number: string,
+    postId: string,
+}
+
+export interface queryPostWithKeywordRequest {
+    student_number: string,
+    startIndex: string,
+    postNum: string,
+    keyword: string
+}
+
+export interface queryHotListRequest {
+    student_number: string,
+    type: string,
+    duration: string
+}
+
+export interface queryFavoritePostRequest {
+    student_number: string,
+    startIndex: string,
+    postNum: string,
+}

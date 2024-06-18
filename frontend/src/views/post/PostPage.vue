@@ -9,7 +9,7 @@
         <el-menu-item index="4">个人主页</el-menu-item>
         <el-avatar :src="avatarUrL"/>
     </el-menu>
-    <MainPostList v-if="curIndex === '1'"/>
+    <MainPostList ref="MainPostListRef" v-if="curIndex === '1'"/>
     <HotPostList v-if="curIndex === '2'"/>
     <FavorPostList v-if="curIndex === '3'"/>
     <StudentInfo v-if="curIndex === '4'"/>
@@ -27,25 +27,37 @@ export default defineComponent({
     const activeIndex = ref('1')
     const curIndex = ref('1')
     const avatarUrL = computed(()=>localStorage.getItem("avatarUrl"))
-    
+    const MainPostListRef = ref(null)
+    const keyword = ref('')
+
     onMounted(()=>{
         console.log(1)
     })
     const handleSelect = (key) => {
+      if (curIndex.value === key && curIndex.value) {
+        curIndex.value = null
+        setTimeout(()=>{
+          curIndex.value = key
+        },0)
+      }else {
         curIndex.value = String(key)
+      }
     }
+
     return {
-        handleSelect,
-        activeIndex,
-        avatarUrL,
-        curIndex
+      MainPostListRef,
+      handleSelect,
+      keyword,
+      activeIndex,
+      avatarUrL,
+      curIndex
     }
   },
   components: {
     StudentInfo,
     MainPostList,
     HotPostList,
-    FavorPostList
+    FavorPostList,
   }
 });
 </script>
