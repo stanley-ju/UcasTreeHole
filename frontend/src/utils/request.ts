@@ -50,10 +50,12 @@ export function interfaceToFormData(data) {
                     // 可以选择传递文件的原始名称作为第三个参数，或者使用索引作为键的后缀
                     formData.append(key, file.raw);
                 });
-            }else if(key === "avatar" && value instanceof File){
-                formData.append(key, value);
+            }else if(key === "avatar" && Array.isArray(value)){
+                formData.append(key, value[0].raw);
+            }else{
+                console.log(typeof value)
+                formData.append(key, String(value));
             }
-            formData.append(key, String(value));
         }
     }
 

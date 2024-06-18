@@ -57,3 +57,23 @@ export interface queryFavoritePostRequest {
     startIndex: string,
     postNum: string,
 }
+
+export interface queryUserPostRequest {
+    student_number: string,
+}
+
+export interface changePasswordRequest {
+    student_number: string,
+    confirmPassword: string,
+    newPassword: string,
+}
+
+export interface uploadAvatarRequest {
+    student_number: string,
+    avatar: any
+}
+
+export interface deleteUserPostRequest{
+    student_number: string,
+    postId: string,
+}
