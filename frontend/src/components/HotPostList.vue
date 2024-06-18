@@ -1,6 +1,6 @@
 <template>
-  <ul>
-    <li v-for="post in postList" :key="post.postId" class="infinite-list">
+  <ul class="infinite-list">
+    <li v-for="post in postList" :key="post.postId">
       <el-card style="max-width: 480px" shadow="always">
         <template #header>
           <div class="card-header">
