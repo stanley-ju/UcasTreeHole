@@ -69,7 +69,7 @@ func UploadAvatar(ctx *gin.Context) {
 		})
 	} else {
 		stuNum := ctx.PostForm("student_number")
-		filepath := "../imgs/avatar_" + stuNum + ".jpg"
+		filepath := "./imgs/avatar_" + stuNum + ".jpg"
 		avatar_url := "tomcat:8080/statics/imgs/avatar_" + stuNum + ".jpg"
 		err = ctx.SaveUploadedFile(avatar, filepath)
 		if err != nil {

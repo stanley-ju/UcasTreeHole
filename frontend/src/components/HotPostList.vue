@@ -64,8 +64,8 @@ export default defineComponent({
       function queryHotList(studentNumber:string, type:string, duration:string){
         const queryHotListParam : queryHotListRequest = {
           student_number:studentNumber,
-          type:type,
-          duration:duration,
+          type:type,//"favor","like"
+          duration:duration,//"day","week","month"
         }
 
         axiosPostApi(queryHotListParam,'/treehole/queryHotPost').then(response => {

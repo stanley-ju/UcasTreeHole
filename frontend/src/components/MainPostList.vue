@@ -2,13 +2,16 @@
   <el-input
       v-model="keyword"
       placeholder="请输入内容"
+      class="search-post"
       clearable
   >
     <template #append>
       <el-button type="primary" :icon="Search" @click="queryPostWithKeyword"></el-button>
     </template>
   </el-input>
+
   <el-button type="success" @click="showSubmit">发帖</el-button>
+
   <el-dialog
       v-model="isVisible"
       title="发帖页"
@@ -19,9 +22,10 @@
   >
   <SubmitPost></SubmitPost>
   </el-dialog>
+
   <ul v-infinite-scroll="load" infinite-scroll-distance="30" class="infinite-list" style="overflow: auto">
     <li v-for="post in postList" :key="post.postId">
-      <el-card style="max-width: 480px" shadow="always">
+      <el-card class="posts" style="max-width: 480px" shadow="always">
         <template #header>
           <div class="card-header">
             <span># {{post.postId}}</span>
@@ -174,6 +178,7 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .infinite-list {
+  width: 800px;
   height: 680px;
   padding: 0;
   margin: 0;
@@ -201,6 +206,16 @@ export default defineComponent({
 
 .dialog-footer .el-icon + .el-icon {
   margin-left: 10px;
+}
+
+.posts {
+  width: 500px;
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  text-align: left;
 }
 
 </style>
