@@ -110,8 +110,10 @@ export default defineComponent({
         if(valid == true){
           axiosPostApi(registerParam,'/user/signup').then(response => {
             localStorage.setItem("avatarUrl",updateUrl(response.avatarURL))
-            router.push('/')
+            window.alert("注册成功，请登录")
+            window.location.reload()
           }).catch(error => {
+            window.alert("注册失败")
             console.error(error)
           })
         }

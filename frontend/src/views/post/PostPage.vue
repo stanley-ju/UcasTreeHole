@@ -22,23 +22,8 @@
             <el-menu-item index="4">个人主页</el-menu-item>
           </el-menu>
         </el-col>
-        <el-col :span="9">
-          <el-input :prefix-icon="Search" class="search" />
-        </el-col>
-        <el-col :span="3">
-          <el-menu
-            mode="horizontal"
-            style="border-bottom: none; height: 48px"
-            ellipsis="false"
-          >
-            <el-sub-menu index="1">
-              <template #title>
-                <el-avatar :src="avatarUrL" style="float: right" />
-              </template>
-              <el-menu-item index="2-1">主页</el-menu-item>
-              <el-menu-item index="2-2">退出</el-menu-item>
-            </el-sub-menu>
-          </el-menu>
+        <el-col :span="2" :offset="6">
+          <el-avatar :src="avatarUrL" style="float: right" />
         </el-col>
       </el-row>
     </el-header>
@@ -66,14 +51,19 @@ export default defineComponent({
     const activeIndex = ref("1");
     const curIndex = ref("1");
     const avatarUrL = computed(() => localStorage.getItem("avatarUrl"));
+    const MainPostListRef = ref(null);
+    const keyword = ref("");
 
+    onMounted(() => {
+      console.log(1);
+    });
     const handleSelect = (key) => {
       curIndex.value = String(key);
     };
-
     return {
-      Search,
+      MainPostListRef,
       handleSelect,
+      keyword,
       activeIndex,
       avatarUrL,
       curIndex,
@@ -94,10 +84,5 @@ export default defineComponent({
   float: left;
   bottom: 0px;
   padding-top: 10px;
-}
-.search {
-  width: 240px;
-  float: right;
-  padding-top: 7px;
 }
 </style>

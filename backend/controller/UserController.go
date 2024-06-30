@@ -4,6 +4,7 @@ import (
 	"backend/common"
 	"backend/model"
 	"backend/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -61,13 +62,14 @@ func Login(ctx *gin.Context) {
 func UploadAvatar(ctx *gin.Context) {
 	avatar, err := ctx.FormFile("avatar")
 	if err != nil {
+		fmt.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"avatarURL":   "",
 			"respMessage": "头像上传失败！",
 		})
 	} else {
 		stuNum := ctx.PostForm("student_number")
-		filepath := "../imgs/avatar_" + stuNum + ".jpg"
+		filepath := "./imgs/avatar_" + stuNum + ".jpg"
 		avatar_url := "tomcat:8080/statics/imgs/avatar_" + stuNum + ".jpg"
 		err = ctx.SaveUploadedFile(avatar, filepath)
 		if err != nil {

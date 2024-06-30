@@ -53,11 +53,11 @@ export default defineComponent({
       }
       axiosPostApi(submitPostParam, '/treehole/submitPost').then(response => {
         console.log(response)
+        window.location.reload()
       }).catch(error => {
         console.error(error)
         window.alert("发帖失败！")
       })
-      window.location.reload()
     }
 
     const handleExceed = (files: File[], fileList: File[]) => {

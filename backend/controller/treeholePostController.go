@@ -252,7 +252,7 @@ func QueryFavoritePost(ctx *gin.Context) {
 
 	var favourId []int
 	var favour []model.FavourPost
-	db.Where("student_number = ?", studentNumber).Find(&favour)
+	db.Where("student_number = ? and favor_type = ?", studentNumber, "favor").Find(&favour)
 	for i := range favour {
 		favourId = append(favourId, favour[i].PostId)
 	}
