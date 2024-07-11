@@ -81,6 +81,7 @@ export default defineComponent({
     const commentForm = ref(null);
     const viewerVisible = ref(false);
     const viewerIndex = ref(0);
+    const avatarUrl = localStorage.getItem('avatarUrl');
 
     const imageUrlArray = computed(() => {
       return postDetail.value.imageUrlList 
