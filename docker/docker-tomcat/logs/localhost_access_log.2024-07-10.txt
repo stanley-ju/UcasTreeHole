@@ -1,0 +1,9 @@
+172.18.0.1 - - [10/Jul/2024:08:40:24 +0000] "GET /statics/imgs/initAvatar.jpg HTTP/1.1" 304 -
+172.18.0.1 - - [10/Jul/2024:08:40:35 +0000] "GET /statics/imgs/8_806A130818B36D892B6D0A80D3C07651-cutout_edited.jpg HTTP/1.1" 304 -
+172.18.0.1 - - [10/Jul/2024:08:40:35 +0000] "GET /statics/imgs/7_t01a3e85a051502b66b.jpg HTTP/1.1" 304 -
+172.18.0.1 - - [10/Jul/2024:08:40:39 +0000] "GET /statics/imgs/8_806A130818B36D892B6D0A80D3C07651-cutout_edited.jpg; HTTP/1.1" 304 -
+172.18.0.1 - - [10/Jul/2024:08:47:23 +0000] "GET /statics/imgs/7_t01a3e85a051502b66b.jpg; HTTP/1.1" 304 -
+172.18.0.1 - - [10/Jul/2024:09:51:09 +0000] "GET /statics/imgs/11_1900013097.jpg HTTP/1.1" 200 61481
+172.18.0.1 - - [10/Jul/2024:09:51:09 +0000] "GET /statics/imgs/11_t01a3e85a051502b66b.jpg HTTP/1.1" 200 10237
+172.18.0.1 - - [10/Jul/2024:09:51:13 +0000] "GET /statics/imgs/11_1900013097.jpg;http://localhost:8081/statics/imgs/11_t01a3e85a051502b66b.jpg; HTTP/1.1" 404 838
+172.18.0.1 - - [10/Jul/2024:09:52:08 +0000] "GET /statics/imgs/11_1900013097.jpg;http://localhost:8081/statics/imgs/11_t01a3e85a051502b66b.jpg; HTTP/1.1" 404 838
