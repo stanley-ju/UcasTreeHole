@@ -4,8 +4,9 @@
     <el-input
       v-model="textarea"
       class="post-textarea"
-      :autosize="{ minRows: 7, maxRows: 8 }"
+      :autosize="{ minRows: 12, maxRows: 18 }"
       type="textarea"
+      :resize="'none'"
       placeholder="在这里输入你的内容吧！"
     />
     <div class="upload-header">上传图片：</div>
@@ -24,7 +25,7 @@
         <div class="upload-tip">仅支持 jpg/png 格式的图片，每张不超过500KB</div>
       </template>
     </el-upload>
-    <el-button type="primary" @click="submitPost" class="submit-button" :disabled="!textarea">发布</el-button>
+    <el-button type="primary" @click="submitPost" class="submit-button" :disabled="!textarea && uploadFiles.length == 0 ">发布</el-button>
   </div>
 </template>
 
@@ -42,7 +43,7 @@ export default defineComponent({
     const uploadFiles = ref([]);
 
     function submitPost() {
-      if (!textarea.value.trim()) {
+      if (!textarea.value.trim() && uploadFiles.value.length === 0) {
         ElMessage.error('内容不能为空');
         return;
       }
@@ -100,7 +101,7 @@ export default defineComponent({
   border: 1px solid #dcdcdc;
   padding: 20px;
   width: 70%;
-  min-height: 80vh;
+  min-height: 20vh;
   margin: 20px auto;
   background: #ffffff;
   border-radius: 8px;
@@ -118,7 +119,7 @@ export default defineComponent({
 
 .post-textarea {
   width: 90%;
-  height: 200px;
+  height: 300px;
   padding: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -140,9 +141,8 @@ export default defineComponent({
 }
 
 .submit-button {
-  margin-top: 30px;
   display: block;
-  margin: 0 auto;
+  margin: 20px auto;
   width: 120px;
   height: 40px;
   font-size: 16px;

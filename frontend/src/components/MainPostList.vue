@@ -18,6 +18,7 @@
       center
       :lock-scroll="false"
       :close-on-click-modal="false"
+      :append-to-body="true"
       class="post-details-dialog"
   >
   <SubmitPost></SubmitPost>

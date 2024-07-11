@@ -18,8 +18,9 @@
           alt="Post Image"
           class="thumbnail"
           fit="cover"
+          :preview-teleported="true"
           :preview-src-list="imageUrlArray"
-          :initial-index="index"
+          :initial-index="viewerIndex"
           @click="handleImageClick(index)"
         />
       </div>
@@ -165,7 +166,6 @@ export default defineComponent({
 
     return {
       content,
-      setFavoritePost,
       submitComment,
       formattedPostTime,
       toggleLike,
@@ -230,7 +230,6 @@ export default defineComponent({
         cursor: pointer;
         object-fit: cover;
         transition: transform 0.3s;
-
         &:hover {
           transform: scale(1.05);
         }
