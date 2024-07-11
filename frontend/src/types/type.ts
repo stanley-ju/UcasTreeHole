@@ -24,7 +24,7 @@ export interface submitPostRequest {
 export interface favoritePostRequest {
     student_number: string,
     postId: string,
-    favorType: string
+    type: string
 }
 
 export interface submitCommentRequest {

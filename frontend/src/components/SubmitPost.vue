@@ -1,63 +1,64 @@
 <template>
-  <div :style="{borderColor: '#ff0000', border: '2px',padding: '10px', width: '100%', height: '100%'}">
-    <div>发帖页</div>
+  <div class="post-container">
+    <div class="post-header">您想跟大家分享什么：</div>
     <el-input
-        v-model="textarea"
-        :style="{width: '240px', height: '200px', padding: '10px'}"
-        :autosize="{ minRows: 6, maxRows: 10 }"
-        type="textarea"
-        placeholder="Please input"
+      v-model="textarea"
+      class="post-textarea"
+      :autosize="{ minRows: 7, maxRows: 8 }"
+      type="textarea"
+      placeholder="在这里输入你的内容吧！"
     />
+    <div class="upload-header">上传图片：</div>
     <el-upload
-        list-type="picture-card"
-        :file-list="uploadFiles"
-        action="#"
-        :on-change="handleChange"
-        :on-exceed="handleExceed"
-        :on-remove="handleRemove"
-        accept="image/png,image/jpeg"
-        :limit="4"
-        :auto-upload="false"
+      list-type="picture-card"
+      :file-list="uploadFiles"
+      action="#"
+      :on-change="handleChange"
+      :on-exceed="handleExceed"
+      :on-remove="handleRemove"
+      accept="image/png,image/jpeg"
+      :limit="4"
+      :auto-upload="false"
     >
       <template #tip>
-        <div class="el-upload__tip">
-          jpg/png files with a size less than 500kb
-        </div>
+        <div class="upload-tip">仅支持 jpg/png 格式的图片，每张不超过500KB</div>
       </template>
     </el-upload>
-
-    <el-button type="primary" @click="submitPost">提交</el-button>
+    <el-button type="primary" @click="submitPost" class="submit-button" :disabled="!textarea">发布</el-button>
   </div>
 </template>
 
-
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
-import {submitPostRequest} from '@/types/type';
-import {userStore} from '@/store/store';
-import {axiosPostApi} from '@/api/api';
-import {ElMessage} from 'element-plus';
+import { defineComponent, ref } from 'vue';
+import { submitPostRequest } from '@/types/type';
+import { userStore } from '@/store/store';
+import { axiosPostApi } from '@/api/api';
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
   setup() {
-    const textarea = ref('')
-    const quoteId = ref('-1')
-    const uploadFiles = ref([])
+    const textarea = ref('');
+    const quoteId = ref('-1');
+    const uploadFiles = ref([]);
 
     function submitPost() {
+      if (!textarea.value.trim()) {
+        ElMessage.error('内容不能为空');
+        return;
+      }
       const submitPostParam: submitPostRequest = {
         student_number: userStore().userId,
         content: textarea.value,
         quoteId: quoteId.value,
         file: uploadFiles.value
-      }
+      };
       axiosPostApi(submitPostParam, '/treehole/submitPost').then(response => {
-        console.log(response)
-        window.location.reload()
+        console.log(response);
+        window.location.reload();
       }).catch(error => {
-        console.error(error)
-        window.alert("发帖失败！")
-      })
+        console.error(error);
+        window.alert("发帖失败！");
+      });
     }
 
     const handleExceed = (files: File[], fileList: File[]) => {
@@ -91,9 +92,61 @@ export default defineComponent({
       handleRemove,
     }
   }
-})
+});
 </script>
 
 <style lang="less" scoped>
+.post-container {
+  border: 1px solid #dcdcdc;
+  padding: 20px;
+  width: 70%;
+  min-height: 80vh;
+  margin: 20px auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
+.post-header {
+  font-size: 24px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  color: #333333;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.post-textarea {
+  width: 90%;
+  height: 200px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: #fafafa;
+  resize: none;
+}
+
+.upload-header {
+  margin-top: 25px;
+  font-size: 20px;
+  color: #666666;
+  margin-bottom: 10px;
+}
+
+.upload-tip {
+  color: #999;
+  font-size: 14px;
+}
+
+.submit-button {
+  margin-top: 30px;
+  display: block;
+  margin: 0 auto;
+  width: 120px;
+  height: 40px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 20px;
+}
 </style>
