@@ -2,6 +2,12 @@
   <div class="forum-post-detail">
     <div class="post-header">
       <div class="post-sender">
+        <el-image
+          :src="postDetail.senderAvatar"
+          alt="Sender Avatar"
+          class="avatar"
+          fit="cover"
+        ></el-image>
         <span class="post-sender-id"><strong>{{ postDetail.senderId }}</strong></span>
       </div>
       <div class="post-info">
@@ -26,10 +32,10 @@
       </div>
     </div>
     <div class="post-actions">
-      <button @click="toggleLike" class="thumb-icon">
+      <button @click="toggleLike" class="thumb-icon" :class="{ 'active': isLiked }">
         👍 {{ postDetail.likeNum }}
       </button>
-      <button @click="toggleFavor" class="star-icon">
+      <button @click="toggleFavor" class="star-icon" :class="{ 'active': isFavored }">
         ⭐ {{ postDetail.favourNum }}
       </button>
       <button @click="scrollToCommentInput" class="comment-icon">
@@ -52,6 +58,12 @@
       <h3>评论区</h3>
       <el-card v-for="comment in postDetail.commentList" :key="comment.commentId" class="comment-card">
         <div class="comment-header">
+          <el-image
+            :src="comment.senderAvatar"
+            alt="Commenter Avatar"
+            class="avatar"
+            fit="cover"
+          ></el-image>
           <strong class="comment-sender">{{ comment.senderId }}</strong>
           <span class="comment-time">{{ formattedPostTime(comment.sendTime) }}</span>
         </div>
@@ -61,12 +73,12 @@
   </div>
 </template>
 
+
 <script lang="ts">
 import { defineComponent, ref, watch, computed } from 'vue';
 import { favoritePostRequest, querySinglePostRequest, submitCommentRequest } from "@/types/type";
 import { axiosPostApi } from "@/api/api";
 import { userStore } from '@/store/store';
-import { ElImageViewer } from 'element-plus';
 
 export default defineComponent({
   props: {
@@ -76,12 +88,11 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const content = ref("")
-    const postDetail = ref(props.postDetail)
+    const content = ref("");
+    const postDetail = ref(props.postDetail);
     const commentForm = ref(null);
     const viewerVisible = ref(false);
     const viewerIndex = ref(0);
-    const avatarUrl = localStorage.getItem('avatarUrl');
 
     const imageUrlArray = computed(() => {
       return postDetail.value.imageUrlList 
@@ -93,11 +104,22 @@ export default defineComponent({
       postDetail.value = { ...newVal };
     });
 
+    const isLiked = computed(() => postDetail.value.isFavour === 'like' || postDetail.value.isFavour === 'both');
+    const isFavored = computed(() => postDetail.value.isFavour === 'favor' || postDetail.value.isFavour === 'both');
+
     const toggleLike = () => {
-      if (postDetail.value.isFavour === 'like' || postDetail.value.isFavour === 'both') {
-        setFavoritePost(userStore().userId, postDetail.value.postId, "like", 0)
+      if (isLiked.value) {
+        setFavoritePost(userStore().userId, postDetail.value.postId, "like", 0);
       } else {
-        setFavoritePost(userStore().userId, postDetail.value.postId, "like", 1)
+        setFavoritePost(userStore().userId, postDetail.value.postId, "like", 1);
+      }
+    };
+
+    const toggleFavor = () => {
+      if (isFavored.value) {
+        setFavoritePost(userStore().userId, postDetail.value.postId, "favor", 0);
+      } else {
+        setFavoritePost(userStore().userId, postDetail.value.postId, "favor", 1);
       }
     };
 
@@ -105,24 +127,16 @@ export default defineComponent({
       commentForm.value.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const toggleFavor = () => {
-      if (postDetail.value.isFavour === 'favor' || postDetail.value.isFavour === 'both') {
-        setFavoritePost(userStore().userId, postDetail.value.postId, "favor", 0)
-      } else {
-        setFavoritePost(userStore().userId, postDetail.value.postId, "favor", 1)
-      }
-    };
-
     function querySinglePost(studentNumber: string, postId: string) {
       const querySinglePostParam: querySinglePostRequest = {
         student_number: studentNumber,
         postId: postId
-      }
+      };
       axiosPostApi(querySinglePostParam, '/treehole/querySinglePost').then(response => {
-        postDetail.value = response.singlePost
+        postDetail.value = response.singlePost;
       }).catch(error => {
-        console.error(error)
-      })
+        console.error(error);
+      });
     }
 
     function setFavoritePost(studentNumber: string, postId: string, favorType: string, flag: number) {
@@ -130,29 +144,29 @@ export default defineComponent({
         student_number: studentNumber,
         postId: postId,
         type: favorType,
-      }
+      };
       const url = flag === 0 ? '/treehole/cancelFavoritePost' : '/treehole/favoritePost';
       axiosPostApi(favoritePostParam, url).then(response => {
-        querySinglePost(studentNumber, postId)
+        querySinglePost(studentNumber, postId);
       }).catch(error => {
-        console.error(error)
-      })
+        console.error(error);
+      });
     }
 
     function submitComment(studentNumber: string, postId: string) {
-      if (!content.value) return; // 判定评论输入是否为空
+      if (!content.value) return;
       const submitCommentParam: submitCommentRequest = {
         student_number: studentNumber,
         postId: postId,
         content: content.value,
         replyId: "-1"
-      }
+      };
       axiosPostApi(submitCommentParam, '/treehole/commentPost').then(response => {
-        querySinglePost(studentNumber, postId)
-        content.value = ""
+        querySinglePost(studentNumber, postId);
+        content.value = "";
       }).catch(error => {
-        console.error(error)
-      })
+        console.error(error);
+      });
     }
 
     const formattedPostTime = (timestamp) => {
@@ -178,9 +192,11 @@ export default defineComponent({
       viewerVisible,
       viewerIndex,
       handleImageClick,
-    }
+      isLiked,
+      isFavored,
+    };
   }
-})
+});
 </script>
 
 <style lang="less" scoped>
@@ -202,9 +218,21 @@ export default defineComponent({
     margin-bottom: 20px;
 
     .post-sender {
-      font-size: 1.6em;
-      font-weight: bold;
-      color: #333;
+      display: flex;
+      align-items: center;
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .post-sender-id {
+        font-size: 1.6em;
+        font-weight: bold;
+        color: #333;
+      }
     }
 
     .post-time {
@@ -244,17 +272,23 @@ export default defineComponent({
     margin-bottom: 20px;
 
     button {
-      background-color: #5fc831;
-      color: #fff;
-      border: none;
+      background-color: transparent;
+      color: #888;
+      border: 1px solid #888;
       border-radius: 5px;
       padding: 8px 16px;
       cursor: pointer;
       font-size: 1em;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, color 0.3s;
 
       &:hover {
-        background-color: #4e8a2b;
+        background-color: #f0f0f0;
+      }
+
+      &.active {
+        background-color: #5fc831;
+        color: #fff;
+        border: 1px solid #5fc831;
       }
     }
 
@@ -317,7 +351,15 @@ export default defineComponent({
       .comment-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         margin-bottom: 10px;
+
+        .avatar {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          margin-right: 10px;
+        }
 
         .comment-sender {
           font-weight: bold;
