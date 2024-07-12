@@ -3,7 +3,7 @@
     <div class="post-header">
       <div class="post-sender">
         <el-image
-          :src="postDetail.senderAvatar"
+          :src="setAvatarUrl(postDetail.senderAvatar)"
           alt="Sender Avatar"
           class="avatar"
           fit="cover"
@@ -58,13 +58,15 @@
       <h3>评论区</h3>
       <el-card v-for="comment in postDetail.commentList" :key="comment.commentId" class="comment-card">
         <div class="comment-header">
-          <el-image
-            :src="comment.senderAvatar"
+          <div class="comment-sender">
+            <el-image
+            :src="setAvatarUrl(comment.senderAvatar)"
             alt="Commenter Avatar"
             class="avatar"
             fit="cover"
-          ></el-image>
-          <strong class="comment-sender">{{ comment.senderId }}</strong>
+            ></el-image>
+            <span class="comment-sender-id">{{ comment.senderId }}</span>
+          </div>
           <span class="comment-time">{{ formattedPostTime(comment.sendTime) }}</span>
         </div>
         <div class="comment-content">{{ comment.content }}</div>
@@ -79,6 +81,7 @@ import { defineComponent, ref, watch, computed } from 'vue';
 import { favoritePostRequest, querySinglePostRequest, submitCommentRequest } from "@/types/type";
 import { axiosPostApi } from "@/api/api";
 import { userStore } from '@/store/store';
+import {updateUrl} from "@/utils/utils";
 
 export default defineComponent({
   props: {
@@ -179,6 +182,11 @@ export default defineComponent({
       viewerVisible.value = true;
     };
 
+    const setAvatarUrl = (avatar) => {
+      // eslint-disable-next-line no-undef
+      return updateUrl(avatar)
+    }
+
     return {
       content,
       submitComment,
@@ -194,6 +202,7 @@ export default defineComponent({
       handleImageClick,
       isLiked,
       isFavored,
+      setAvatarUrl
     };
   }
 });
@@ -354,21 +363,25 @@ export default defineComponent({
         align-items: center;
         margin-bottom: 10px;
 
-        .avatar {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          margin-right: 10px;
-        }
-
         .comment-sender {
-          font-weight: bold;
-          color: #333;
-        }
+          display: flex;
+          align-items: center;
+          .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+          }
 
-        .comment-time {
-          color: #888;
-          font-size: 0.9em;
+          .comment-sender-id {
+            font-weight: bold;
+            color: #333;
+          }
+
+          .comment-time {
+            color: #888;
+            font-size: 0.9em;
+          }
         }
       }
 
