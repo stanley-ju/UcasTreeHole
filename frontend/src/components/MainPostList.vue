@@ -1,5 +1,5 @@
 <template>
-  <el-affix :offset="affixOffset">
+    <el-affix :offset="affixOffset">
     <el-button
       size="large"
       type="primary"
@@ -158,6 +158,7 @@ export default defineComponent({
     };
   },
   components: {
+    SubmitPost,
     Post,
     FontAwesomeIcon,
   },

@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { queryStudentInfoRequest, favoritePostRequest } from "@/types/type";
 import { axiosPostApi } from "@/api/api";
 import { userStore } from "@/store/store";
@@ -107,11 +107,18 @@ export default {
     const isDetailVisible = ref(false);
     const favour = ref("");
     const detail = ref();
+    const urls = ref([]);
 
     onMounted(() => {
       favour.value = props.isFavour;
-      queryPostAvatar(props.senderId);
-      console.log(postAvatarUrl.value);
+      urls.value = new Array(props.commentList.length).fill("");
+      queryPostAvatar(props.senderId, props.commentList);
+    });
+
+    watchEffect(() => {
+      for (let i = 0; i < props.commentList.length; ++i) {
+        props.commentList[i]["senderAvatar"] = urls.value[i];
+      }
       detail.value = {
         postId: props.postId,
         senderId: props.senderId,
@@ -121,10 +128,11 @@ export default {
         content: props.content,
         isFavour: props.isFavour,
         commentList: props.commentList,
+        senderAvatar: postAvatarUrl.value,
       };
     });
 
-    function queryPostAvatar(senderId) {
+    function queryPostAvatar(senderId, comments) {
       const queryPostParam: queryStudentInfoRequest = {
         student_number: senderId,
       };
@@ -134,7 +142,21 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          postAvatarUrl.value = "";
         });
+      for (let i = 0; i < comments.length; ++i) {
+        const queryPostParam: queryStudentInfoRequest = {
+          student_number: comments[i].senderId,
+        };
+        axiosPostApi(queryPostParam, "user/queryStudentInfo")
+          .then((response) => {
+            urls.value.splice(i, 1, response.avatarURL);
+          })
+          .catch((error) => {
+            console.error(error);
+            urls.value[i] = "";
+          });
+      }
     }
 
     function likeAndFavor(type) {
@@ -229,6 +251,9 @@ export default {
       updateUrl,
       detail,
     };
+  },
+  components: {
+    PostDetail,
   },
 };
 </script>
