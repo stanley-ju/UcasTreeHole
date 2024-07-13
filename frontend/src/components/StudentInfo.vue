@@ -28,15 +28,8 @@ import {changePasswordRequest, deleteUserPostRequest, queryUserPostRequest, uplo
 import {userStore} from "@/store/store";
 import {axiosPostApi} from "@/api/api";
 import {ElMessage} from "element-plus";
+import {updateUrl} from "@/utils/utils";
 
-function updateUrl(url:string){
-  if (url.includes('/')) {
-    const index = url.indexOf('/');
-    return 'http://localhost:8081' + url.substring(index);
-  } else {
-    return url;
-  }
-}
 
 export default defineComponent({
     setup(){

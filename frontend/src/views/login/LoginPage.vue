@@ -70,15 +70,7 @@ import { axiosPostApi } from '@/api/api'
 import { loginRequest, registerRequest } from '@/types/type'
 import { useRouter } from 'vue-router'
 import { userStore } from '@/store/store'
-
-function updateUrl(url:string){
-  if (url.includes('/')) {
-      const index = url.indexOf('/');
-      return 'http://localhost:8081' + url.substring(index);
-    } else {
-      return url;
-    }
-}
+import {updateUrl} from "@/utils/utils";
 
 export default defineComponent({
   setup(){

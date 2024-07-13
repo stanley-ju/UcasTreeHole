@@ -22,9 +22,9 @@ export interface submitPostRequest {
 }
 
 export interface favoritePostRequest {
-  student_number: string,
-  postId: string,
-  type: string
+    student_number: string,
+    postId: string,
+    type: string
 }
 
 export interface submitCommentRequest {

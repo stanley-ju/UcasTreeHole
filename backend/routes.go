@@ -35,7 +35,6 @@ func CollectRoute(env *gin.Engine) *gin.Engine {
 	env.Use(utils.GetToken())
 	env.POST("/user/uploadAvatar", controller.UploadAvatar)
 	env.POST("/user/changePassword", controller.ChangePassword)
-	env.POST("/user/queryStudentInfo", controller.QueryStudentInfo)
 
 	env.POST("/treehole/submitPost", controller.SubmitPost)
 	env.POST("/treehole/commentPost", controller.CommentPost)

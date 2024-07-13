@@ -13,6 +13,7 @@ import (
 type posts struct {
 	PostId       int        `json:"postId"`
 	SenderId     string     `json:"senderId"`
+	SenderAvatar string     `json:"senderAvatar"`
 	SendTime     int64      `json:"sendTime"`
 	LikeNum      int        `json:"likeNum"`
 	FavourNum    int        `json:"favourNum"`
@@ -24,12 +25,13 @@ type posts struct {
 }
 
 type comments struct {
-	PostId    int    `json:"postId"`
-	SenderId  string `json:"senderId"`
-	SendTime  int64  `json:"sendTime"`
-	CommentId int    `json:"commentId"`
-	Content   string `json:"content"`
-	ReplyId   int    `json:"replyId"`
+	PostId       int    `json:"postId"`
+	SenderId     string `json:"senderId"`
+	SenderAvatar string `json:"senderAvatar"`
+	SendTime     int64  `json:"sendTime"`
+	CommentId    int    `json:"commentId"`
+	Content      string `json:"content"`
+	ReplyId      int    `json:"replyId"`
 }
 
 func convertPost(c model.TreeholePost, studentNumber string) posts {
@@ -43,6 +45,7 @@ func convertPost(c model.TreeholePost, studentNumber string) posts {
 	res.LikeNum = c.LikeNum
 	res.ImageUrlList = c.ImageUrlList
 	res.CommentList = []comments{}
+	res.SenderAvatar = queryStudentInfo(studentNumber)
 
 	db := common.GetDB()
 	var Comments []model.PostComment
@@ -72,6 +75,7 @@ func convertComment(c model.PostComment) comments {
 	res.Content = c.Content
 	res.ReplyId = c.ReplyId
 	res.CommentId = int(c.ID)
+	res.SenderAvatar = queryStudentInfo(c.SenderId)
 	return res
 }
 
@@ -402,4 +406,14 @@ func DeleteUserComment(ctx *gin.Context) {
 			"respMessage": "success",
 		})
 	}
+}
+
+func queryStudentInfo(stuNum string) string {
+	db := common.GetDB()
+
+	user := model.StudentInfo{
+		StudentNumber: stuNum,
+	}
+	db.First(&user)
+	return user.AvatarURL
 }

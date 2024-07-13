@@ -110,24 +110,3 @@ func ChangePassword(ctx *gin.Context) {
 		})
 	}
 }
-
-func QueryStudentInfo(ctx *gin.Context) {
-	db := common.GetDB()
-	stuNum := ctx.PostForm("student_number")
-
-	user := model.StudentInfo{
-		StudentNumber: stuNum,
-	}
-	result := db.First(&user)
-
-	if result.Error != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"respMessage": "查询个人信息失败！",
-		})
-	} else {
-		ctx.JSON(http.StatusOK, gin.H{
-			"avatarURL":   user.AvatarURL,
-			"respMessage": "success",
-		})
-	}
-}
