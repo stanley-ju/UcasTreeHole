@@ -69,7 +69,7 @@
     class="post-details-dialog"
   >
     <div class="dialog-content">
-      <PostDetail :postDetail="postDetailContent"></PostDetail>
+      <PostDetail :postDetail="detail"></PostDetail>
     </div>
   </el-dialog>
 </template>
@@ -79,6 +79,7 @@ import { onMounted, ref } from "vue";
 import { queryStudentInfoRequest, favoritePostRequest } from "@/types/type";
 import { axiosPostApi } from "@/api/api";
 import { userStore } from "@/store/store";
+import PostDetail from "./PostDetail.vue";
 
 function updateUrl(url: string) {
   if (url.includes("/")) {
@@ -105,11 +106,22 @@ export default {
     const postDetailContent = ref(null);
     const isDetailVisible = ref(false);
     const favour = ref("");
+    const detail = ref();
 
     onMounted(() => {
       favour.value = props.isFavour;
       queryPostAvatar(props.senderId);
       console.log(postAvatarUrl.value);
+      detail.value = {
+        postId: props.postId,
+        senderId: props.senderId,
+        sendTime: props.sendTime,
+        likeNum: props.likeNum,
+        favourNum: props.favourNum,
+        content: props.content,
+        isFavour: props.isFavour,
+        commentList: props.commentList,
+      };
     });
 
     function queryPostAvatar(senderId) {
@@ -215,6 +227,7 @@ export default {
       showDetail,
       likeAndFavor,
       updateUrl,
+      detail,
     };
   },
 };
@@ -228,6 +241,7 @@ export default {
   margin: 10px 0px;
   padding-bottom: 10px;
 }
+
 .content {
   font-size: 18px;
   margin-top: 5px;
@@ -238,7 +252,31 @@ export default {
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
+
 .blue {
   color: var(--el-color-primary);
+}
+
+.post-details-dialog {
+  /* 模态框的宽度和高度设置 */
+  width: 40%;
+  height: 80vh; /* vh 单位：视口高度的百分比 */
+  margin: auto; /* 使模态框在视口中水平居中 */
+  overflow: auto; /* 如果内容超出，允许垂直滚动 */
+  position: relative; /* 相对定位，以便于内部内容可以绝对定位 */
+  top: 50%;
+  transform: translateY(-50%); /* 垂直居中 */
+  background-color: rgba(0, 0, 0, 0.8); /* 背景色变暗 */
+  z-index: 1000; /* 确保模态框在最上层 */
+}
+
+.dialog-content {
+  /* 根据需要设置内部内容的样式 */
+  max-height: 100%; /* 内容的最大高度为模态框的高度 */
+  overflow: auto; /* 如果内容超出，允许滚动 */
+}
+
+.dialog-footer .el-icon + .el-icon {
+  margin-left: 10px;
 }
 </style>

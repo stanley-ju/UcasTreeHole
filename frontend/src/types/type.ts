@@ -77,3 +77,7 @@ export interface deleteUserPostRequest{
   student_number: string,
   postId: string,
 }
+
+export interface queryStudentInfoRequest {
+  student_number: string,
+};
