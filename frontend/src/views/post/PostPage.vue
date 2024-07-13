@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-header height="48px">
+    <el-header height="48px" class="header">
       <el-row>
         <el-col :span="2" :offset="2">
           <img
@@ -9,7 +9,7 @@
             class="icon"
           />
         </el-col>
-        <el-col :span="8">
+        <el-col :span="16">
           <el-menu
             :default-active="activeIndex"
             mode="horizontal"
@@ -22,14 +22,12 @@
             <el-menu-item index="4">个人主页</el-menu-item>
           </el-menu>
         </el-col>
-        <el-col :span="2" :offset="6">
-          <el-avatar :src="avatarUrL" style="float: right" />
+        <el-col :span="2" style="padding-top: 4px">
+          <el-avatar :src="avatarUrL" style="float: right; margin-right: 15%" />
         </el-col>
       </el-row>
     </el-header>
-    <el-main
-      style="background-color: #f5f5f5; --el-main-padding: 20px 0px 0px 0px"
-    >
+    <el-main class="main">
       <MainPostList v-if="curIndex === '1'" />
       <HotPostList v-if="curIndex === '2'" />
       <FavorPostList v-if="curIndex === '3'" />
@@ -44,7 +42,6 @@ import StudentInfo from "../../components/StudentInfo.vue";
 import MainPostList from "../../components/MainPostList.vue";
 import HotPostList from "../../components/HotPostList.vue";
 import FavorPostList from "../../components/FavorPostList.vue";
-import { Search } from "@element-plus/icons-vue";
 
 export default defineComponent({
   setup() {
@@ -54,9 +51,6 @@ export default defineComponent({
     const MainPostListRef = ref(null);
     const keyword = ref("");
 
-    onMounted(() => {
-      console.log(1);
-    });
     const handleSelect = (key) => {
       curIndex.value = String(key);
     };
@@ -79,6 +73,20 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.header {
+  padding: 0;
+  box-shadow: 0 0 0 0 transparent, 0 0 0 0 transparent,
+    0 1px 4px 0 rgba(0, 0, 0, 0.02), 0 2px 12px 0 rgba(0, 0, 0, 0.04),
+    0 2px 6px 0 rgba(0, 0, 0, 0.02);
+  z-index: 999;
+}
+
+.main {
+  background: linear-gradient(var(--el-color-primary-light-9), #f8f8f8);
+  background-repeat: no-repeat;
+  --el-main-padding: 0px;
+}
+
 .icon {
   height: 24px;
   float: left;

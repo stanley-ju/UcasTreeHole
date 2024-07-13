@@ -1,36 +1,48 @@
 <template>
+  <el-affix :offset="affixOffset">
+    <el-button
+      size="large"
+      type="primary"
+      :icon="Plus"
+      circle
+      @click="showSubmit"
+      class="submitAffix"
+    />
+  </el-affix>
   <ul
     v-infinite-scroll="load"
     :infinite-scroll-distance="10"
     class="infinite-list"
   >
-    <el-input
-      v-model="keyword"
-      placeholder="请输入内容"
-      class="search-post"
-      clearable
-    >
-      <template #append>
-        <el-button
-          type="primary"
-          :icon="Search"
-          @click="queryPostWithKeyword"
-        ></el-button>
-      </template>
-    </el-input>
-
-    <el-button type="success" @click="showSubmit">发帖</el-button>
     <el-row>
       <el-col :span="20" :offset="2">
         <div class="posts">
+          <el-input
+            v-model="keyword"
+            placeholder="请输入内容"
+            class="search-post"
+            clearable
+          >
+            <template #append>
+              <el-button
+                type="primary"
+                :icon="Search"
+                @click="queryPostWithKeyword"
+              ></el-button>
+            </template>
+          </el-input>
+        </div>
+        <div class="posts">
           <Post
             v-for="post in postList"
+            :postId="post.postId"
             :senderId="post.senderId"
             :sendTime="post.sendTime"
             :likeNum="post.likeNum"
             :favourNum="post.favourNum"
             :content="post.content"
             :isFavour="post.isFavour"
+            :commentList="post.commentList"
           />
         </div>
       </el-col>
@@ -47,27 +59,13 @@
   >
     <SubmitPost></SubmitPost>
   </el-dialog>
-
-  <el-dialog
-    v-model="isVisible2"
-    title="帖子详情"
-    center
-    :lock-scroll="false"
-    :close-on-click-modal="false"
-    class="post-details-dialog"
-  >
-    <div class="dialog-content">
-      <PostDetail :postDetail="postDetailContent"></PostDetail>
-    </div>
-  </el-dialog>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import SubmitPost from "./SubmitPost.vue";
-import PostDetail from "./PostDetail.vue";
 import Post from "./Post.vue";
-import { Close, Search } from "@element-plus/icons-vue";
+import { Close, Plus, Search } from "@element-plus/icons-vue";
 import { queryPostRequest, queryPostWithKeywordRequest } from "@/types/type";
 import { axiosPostApi } from "@/api/api";
 import { userStore } from "@/store/store";
@@ -75,38 +73,12 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 export default defineComponent({
   setup() {
-    const testPost1 = {
-      postId: 1, //帖子id
-      senderId: 202328018629005, //发送人学号
-      sendTime: 1719036863, //发送时间,unix时间戳格式
-      likeNum: 5, //点赞量
-      favourNum: 10, //收藏量
-      content: "测试内容1", //帖子内容
-      quoteId: -1, //引用的帖子Id -1
-      isFavour: "true",
-    };
-    const testPost2 = {
-      postId: 2, //帖子id
-      senderId: 202328018629006, //发送人学号
-      sendTime: 1719036863, //发送时间,unix时间戳格式
-      likeNum: 1, //点赞量
-      favourNum: 2, //收藏量
-      content: "测试内容2", //帖子内容
-      quoteId: -1, //引用的帖子Id -1
-      isFavour: "false",
-    };
-
-    onMounted(() => {
-      let testPostList = [testPost1, testPost2];
-      postList.value = testPostList;
-    });
     const startIndex = ref(1);
     const postNum = ref(10);
     const postList = ref([]);
     const isVisible = ref(false);
-    const isVisible2 = ref(false);
-    const postDetailContent = ref(null);
     const keyword = ref("");
+    const affixOffset = ref(window.innerHeight * 0.84);
     let searchFlag = 0;
 
     onMounted(() => {
@@ -164,39 +136,28 @@ export default defineComponent({
       isVisible.value = true;
     }
 
-    function showDetail(post) {
-      isVisible2.value = true;
-      postDetailContent.value = post;
-    }
-
     const load = () => {
-      postList.value.push(testPost1);
-      postList.value.push(testPost2);
-      console.log(postList.value);
-      // console.log('reach bottom')
-      // if(searchFlag == 0) {
-      //   queryPosts()
-      // }else{
-      //   queryPostWithKeyword()
-      // }
+      if (searchFlag == 0) {
+        queryPosts();
+      } else {
+        queryPostWithKeyword();
+      }
     };
 
     return {
       postList,
       load,
       showSubmit,
-      showDetail,
       isVisible,
-      isVisible2,
       keyword,
-      postDetailContent,
+      affixOffset,
       queryPostWithKeyword,
       Close,
       Search,
+      Plus,
     };
   },
   components: {
-    PostDetail,
     Post,
     FontAwesomeIcon,
   },
@@ -206,15 +167,15 @@ export default defineComponent({
 <style lang="less" scoped>
 .infinite-list {
   overflow: auto;
-  height: calc(100vh - 84px);
+  height: calc(100vh - 52px);
   padding: 0px;
   margin: 0px;
   --el-main-padding: 0px;
 }
 
 .posts {
-  width: 100%;
   background-color: white;
+  margin: 12px 0px;
   padding: 12px 20px;
   border-radius: 12px;
   text-align: left;
@@ -241,5 +202,15 @@ export default defineComponent({
 
 .dialog-footer .el-icon + .el-icon {
   margin-left: 10px;
+}
+
+.el-affix {
+  height: 0;
+}
+
+.submitAffix {
+  float: right;
+  margin-right: 3.3%;
+  --el-button-size: 50px;
 }
 </style>

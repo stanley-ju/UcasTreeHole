@@ -42,7 +42,7 @@ export default defineComponent({
       const favoritePostParam : favoritePostRequest = {
         student_number: studentNumber,
         postId: postId,
-        favorType: favorType,
+        type: favorType,
       }
       var url : string
       if (flag === 0){
