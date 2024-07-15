@@ -1,17 +1,19 @@
 <template>
-  <div class="post">
+  <div class="post"  @click="showDetail">
     <el-row @click="showDetail">
       <el-col :span="2">
-        <el-avatar :src="updateUrl(postAvatarUrl)" />
+        <el-avatar :src="updateUrl(senderAvatar)" />
       </el-col>
       <el-col :span="8" style="font-size: 16px">
         <div>{{ senderId }}</div>
         <div style="color: #bbbbbb">{{ unixTimeToString(sendTime) }}</div>
       </el-col>
     </el-row>
-    <div class="content" @click="showDetail">
+    <div class="content">
       {{ content }}
     </div>
+    <el-image v-for="(url, index) in imageUrlList.split(';').filter(part => part !== '')" :key="index" style="width: 100px; height: 100px" :src="url" :fit="'contain'" />
+
     <el-row style="font-size: 16px; color: #bbbbbb">
       <el-col
         :span="2"
@@ -21,7 +23,6 @@
               ? 'var(--el-color-primary)'
               : '',
         }"
-        @click="likeAndFavor('like')"
       >
         <font-awesome-icon
           :icon="
@@ -40,7 +41,6 @@
               ? 'var(--el-color-primary)'
               : '',
         }"
-        @click="likeAndFavor('favor')"
       >
         <font-awesome-icon
           :icon="
@@ -76,21 +76,14 @@
 
 <script lang="ts">
 import { onMounted, ref, watchEffect } from "vue";
-import { queryStudentInfoRequest, favoritePostRequest } from "@/types/type";
+import { favoritePostRequest } from "@/types/type";
 import { axiosPostApi } from "@/api/api";
 import { userStore } from "@/store/store";
 import PostDetail from "./PostDetail.vue";
-
-function updateUrl(url: string) {
-  if (url.includes("/")) {
-    const index = url.indexOf("/");
-    return "http://localhost:8081" + url.substring(index);
-  } else {
-    return url;
-  }
-}
+import {updateUrl} from "@/utils/utils";
 
 export default {
+  emits:['dialog-closed'],
   props: {
     postId: Number,
     senderId: String,
@@ -99,7 +92,9 @@ export default {
     favourNum: Number,
     content: String,
     isFavour: String,
+    senderAvatar: String,
     commentList: Array,
+    imageUrlList: String,
   },
   setup(props) {
     const postAvatarUrl = ref("");
@@ -107,18 +102,12 @@ export default {
     const isDetailVisible = ref(false);
     const favour = ref("");
     const detail = ref();
-    const urls = ref([]);
 
     onMounted(() => {
       favour.value = props.isFavour;
-      urls.value = new Array(props.commentList.length).fill("");
-      queryPostAvatar(props.senderId, props.commentList);
     });
 
     watchEffect(() => {
-      for (let i = 0; i < props.commentList.length; ++i) {
-        props.commentList[i]["senderAvatar"] = urls.value[i];
-      }
       detail.value = {
         postId: props.postId,
         senderId: props.senderId,
@@ -128,36 +117,10 @@ export default {
         content: props.content,
         isFavour: props.isFavour,
         commentList: props.commentList,
-        senderAvatar: postAvatarUrl.value,
+        senderAvatar: props.senderAvatar,
+        imageUrlList: props.imageUrlList,
       };
     });
-
-    function queryPostAvatar(senderId, comments) {
-      const queryPostParam: queryStudentInfoRequest = {
-        student_number: senderId,
-      };
-      axiosPostApi(queryPostParam, "user/queryStudentInfo")
-        .then((response) => {
-          postAvatarUrl.value = response.avatarURL;
-        })
-        .catch((error) => {
-          console.error(error);
-          postAvatarUrl.value = "";
-        });
-      for (let i = 0; i < comments.length; ++i) {
-        const queryPostParam: queryStudentInfoRequest = {
-          student_number: comments[i].senderId,
-        };
-        axiosPostApi(queryPostParam, "user/queryStudentInfo")
-          .then((response) => {
-            urls.value.splice(i, 1, response.avatarURL);
-          })
-          .catch((error) => {
-            console.error(error);
-            urls.value[i] = "";
-          });
-      }
-    }
 
     function likeAndFavor(type) {
       const favoritePostRequestParam: favoritePostRequest = {
@@ -260,11 +223,10 @@ export default {
 
 <style lang="less" scoped>
 .post {
-  border-bottom-style: solid;
-  border-width: 1px;
-  border-color: #f5f5f5;
-  margin: 10px 0px;
-  padding-bottom: 10px;
+  background-color: rgb(243, 255, 254);
+  margin: 10px 20px 20px 20px;
+  padding: 20px;
+  border-radius: 8px;
 }
 
 .content {

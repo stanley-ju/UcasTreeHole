@@ -3,11 +3,11 @@
     <el-header height="48px" class="header">
       <el-row>
         <el-col :span="2" :offset="2">
-          <img
-            src="https://static.nowcoder.com/fe/file/logo/1.png"
-            alt="logo"
-            class="icon"
-          />
+<!--          <img-->
+<!--            src="https://static.nowcoder.com/fe/file/logo/1.png"-->
+<!--            alt="logo"-->
+<!--            class="icon"-->
+<!--          />-->
         </el-col>
         <el-col :span="16">
           <el-menu

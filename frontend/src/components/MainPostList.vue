@@ -9,7 +9,7 @@
       class="submitAffix"
     />
   </el-affix>
-  <ul
+  <ul id = "post-list"
     v-infinite-scroll="load"
     :infinite-scroll-distance="10"
     class="infinite-list"
@@ -31,8 +31,6 @@
               ></el-button>
             </template>
           </el-input>
-        </div>
-        <div class="posts">
           <Post
             v-for="post in postList"
             :postId="post.postId"
@@ -43,6 +41,8 @@
             :content="post.content"
             :isFavour="post.isFavour"
             :commentList="post.commentList"
+            :senderAvatar="post.senderAvatar"
+            :imageUrlList="post.imageUrlList"
           />
         </div>
       </el-col>
@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, nextTick } from "vue";
 import SubmitPost from "./SubmitPost.vue";
 import Post from "./Post.vue";
 import { Close, Plus, Search } from "@element-plus/icons-vue";
@@ -80,6 +80,8 @@ export default defineComponent({
     const keyword = ref("");
     const affixOffset = ref(window.innerHeight * 0.84);
     let searchFlag = 0;
+    const scrollPosition = ref(0);
+    const scrollContainer = ref(null);
 
     onMounted(() => {
       searchFlag = 0;
@@ -152,6 +154,7 @@ export default defineComponent({
       keyword,
       affixOffset,
       queryPostWithKeyword,
+      scrollContainer,
       Close,
       Search,
       Plus,
@@ -175,9 +178,9 @@ export default defineComponent({
 }
 
 .posts {
-  background-color: white;
-  margin: 12px 0px;
-  padding: 12px 20px;
+  background-color: rgba(255, 255, 255, 0.53);
+  margin: 12px 20px 20px 20px;
+  padding: 12px 20px 20px 20px;
   border-radius: 12px;
   text-align: left;
 }
