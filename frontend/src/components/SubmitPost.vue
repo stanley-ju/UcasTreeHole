@@ -4,7 +4,7 @@
     <el-input
       v-model="textarea"
       class="post-textarea"
-      :autosize="{ minRows: 12, maxRows: 18 }"
+      :rows="12"
       type="textarea"
       :resize="'none'"
       placeholder="在这里输入你的内容吧！"
