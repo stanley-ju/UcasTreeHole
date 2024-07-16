@@ -1,5 +1,5 @@
 <template>
-  <div class="post"  @click="showDetail">
+  <div class="post" @click="showDetail">
     <el-row @click="showDetail">
       <el-col :span="2">
         <el-avatar :src="updateUrl(senderAvatar)" />
@@ -12,7 +12,14 @@
     <div class="content">
       {{ content }}
     </div>
-    <el-image v-for="(url, index) in imageUrlList.split(';').filter(part => part !== '')" :key="index" style="width: 100px; height: 100px" :src="url" :fit="'contain'" />
+    <div v-if="imageUrls.length == 1">
+      <el-image :src="imageUrls[0]" fit="cover" class="image" />
+    </div>
+    <div v-else-if="imageUrls.length > 1">
+      <div v-for="imageUrl in imageUrls" style="display: inline-block">
+        <el-image class="images" :src="imageUrl" fit="cover" />
+      </div>
+    </div>
 
     <el-row style="font-size: 16px; color: #bbbbbb">
       <el-col
@@ -80,10 +87,10 @@ import { favoritePostRequest } from "@/types/type";
 import { axiosPostApi } from "@/api/api";
 import { userStore } from "@/store/store";
 import PostDetail from "./PostDetail.vue";
-import {updateUrl} from "@/utils/utils";
+import { updateUrl } from "@/utils/utils";
 
 export default {
-  emits:['dialog-closed'],
+  emits: ["dialog-closed"],
   props: {
     postId: Number,
     senderId: String,
@@ -102,12 +109,16 @@ export default {
     const isDetailVisible = ref(false);
     const favour = ref("");
     const detail = ref();
+    const imageUrls = ref([]);
 
     onMounted(() => {
       favour.value = props.isFavour;
     });
 
     watchEffect(() => {
+      imageUrls.value = props.imageUrlList
+        .split(";")
+        .filter((part) => part !== "");
       detail.value = {
         postId: props.postId,
         senderId: props.senderId,
@@ -213,6 +224,7 @@ export default {
       likeAndFavor,
       updateUrl,
       detail,
+      imageUrls,
     };
   },
   components: {
@@ -239,6 +251,20 @@ export default {
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   white-space: pre-line;
+}
+
+.image {
+  width: 284px;
+  height: auto;
+  max-height: 402px;
+  border-radius: 8px;
+}
+
+.images {
+  width: 138px;
+  height: 138px;
+  margin-right: 8px;
+  border-radius: 8px;
 }
 
 .blue {
