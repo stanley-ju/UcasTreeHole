@@ -1,5 +1,5 @@
 <template>
-  <div class="post"  @click="showDetail">
+  <div class="post">
     <el-row @click="showDetail">
       <el-col :span="2">
         <el-avatar :src="updateUrl(senderAvatar)" />
@@ -9,46 +9,35 @@
         <div style="color: #bbbbbb">{{ unixTimeToString(sendTime) }}</div>
       </el-col>
     </el-row>
-    <div class="content">
+    <div class="content" @click="showDetail">
       {{ content }}
     </div>
-    <el-image v-for="(url, index) in imageUrlList.split(';').filter(part => part !== '')" :key="index" style="width: 100px; height: 100px" :src="url" :fit="'contain'" />
+    <el-image v-for="(url, index) in imageUrlList.split(';').filter(part => part !== '')" :key="index"
+      style="width: 100px; height: 100px" :src="url" :fit="'contain'" />
 
     <el-row style="font-size: 16px; color: #bbbbbb">
-      <el-col
-        :span="2"
-        :style="{
-          color:
-            isFavour == 'both' || isFavour == 'like'
-              ? 'var(--el-color-primary)'
-              : '',
-        }"
-      >
-        <font-awesome-icon
-          :icon="
-            isFavour == 'both' || isFavour == 'like'
-              ? ['fas', 'thumbs-up']
-              : ['far', 'thumbs-up']
-          "
-        />
+      <el-col :span="2" :style="{
+        color:
+          isFavour == 'both' || isFavour == 'like'
+            ? 'var(--el-color-primary)'
+            : '',
+      }" @click="showDetail">
+        <font-awesome-icon :icon="isFavour == 'both' || isFavour == 'like'
+          ? ['fas', 'thumbs-up']
+          : ['far', 'thumbs-up']
+          " />
         &nbsp;{{ likeNum }}
       </el-col>
-      <el-col
-        :span="2"
-        :style="{
-          color:
-            isFavour == 'both' || isFavour == 'favor'
-              ? 'var(--el-color-primary)'
-              : '',
-        }"
-      >
-        <font-awesome-icon
-          :icon="
-            isFavour == 'both' || isFavour == 'favor'
-              ? ['fas', 'star']
-              : ['far', 'star']
-          "
-        />
+      <el-col :span="2" :style="{
+        color:
+          isFavour == 'both' || isFavour == 'favor'
+            ? 'var(--el-color-primary)'
+            : '',
+      }" @click="showDetail">
+        <font-awesome-icon :icon="isFavour == 'both' || isFavour == 'favor'
+          ? ['fas', 'star']
+          : ['far', 'star']
+          " />
         &nbsp;{{ favourNum }}
       </el-col>
       <el-col :span="2" @click="showDetail">
@@ -56,18 +45,19 @@
           commentList.length
         }}
       </el-col>
-      <el-col :span="18" @click="showDetail" />
+      <el-col :span="1" @click="showDetail" />
+      <el-col span="2" @click="deletePost" v-if="canDelete">
+        <div style="color: var(--el-color-primary);">
+          删除
+        </div>
+      </el-col>
+      <el-col :span="15" @click="showDetail" />
+
     </el-row>
   </div>
 
-  <el-dialog
-    v-model="isDetailVisible"
-    title="帖子详情"
-    center
-    :lock-scroll="false"
-    :close-on-click-modal="false"
-    class="post-details-dialog"
-  >
+  <el-dialog v-model="isDetailVisible" title="帖子详情" center :lock-scroll="false" :close-on-click-modal="false"
+    class="post-details-dialog">
     <div class="dialog-content">
       <PostDetail :postDetail="detail"></PostDetail>
     </div>
@@ -76,14 +66,14 @@
 
 <script lang="ts">
 import { onMounted, ref, watchEffect } from "vue";
-import { favoritePostRequest } from "@/types/type";
+import { favoritePostRequest, deleteUserPostRequest } from "@/types/type";
 import { axiosPostApi } from "@/api/api";
 import { userStore } from "@/store/store";
 import PostDetail from "./PostDetail.vue";
-import {updateUrl} from "@/utils/utils";
+import { updateUrl } from "@/utils/utils";
 
 export default {
-  emits:['dialog-closed'],
+  emits: ['dialog-closed'],
   props: {
     postId: Number,
     senderId: String,
@@ -95,6 +85,10 @@ export default {
     senderAvatar: String,
     commentList: Array,
     imageUrlList: String,
+    canDelete: {
+      type: Boolean,
+      default: false
+    },
   },
   setup(props) {
     const postAvatarUrl = ref("");
@@ -198,6 +192,19 @@ export default {
       postDetailContent.value = post;
     }
 
+    function deletePost() {
+      const deletePostParam: deleteUserPostRequest = {
+        student_number: props.senderId,
+        postId: props.postId.toString()
+      }
+      axiosPostApi(deletePostParam, '/treehole/deleteUserPost').then(response => {
+        location.reload();
+      }).catch(error => {
+        window.alert("删帖失败")
+        console.error(error)
+      })
+    }
+
     return {
       senderId: props.senderId,
       sendTime: props.sendTime,
@@ -213,6 +220,7 @@ export default {
       likeAndFavor,
       updateUrl,
       detail,
+      deletePost
     };
   },
   components: {
@@ -248,23 +256,32 @@ export default {
 .post-details-dialog {
   /* 模态框的宽度和高度设置 */
   width: 40%;
-  height: 80vh; /* vh 单位：视口高度的百分比 */
-  margin: auto; /* 使模态框在视口中水平居中 */
-  overflow: auto; /* 如果内容超出，允许垂直滚动 */
-  position: relative; /* 相对定位，以便于内部内容可以绝对定位 */
+  height: 80vh;
+  /* vh 单位：视口高度的百分比 */
+  margin: auto;
+  /* 使模态框在视口中水平居中 */
+  overflow: auto;
+  /* 如果内容超出，允许垂直滚动 */
+  position: relative;
+  /* 相对定位，以便于内部内容可以绝对定位 */
   top: 50%;
-  transform: translateY(-50%); /* 垂直居中 */
-  background-color: rgba(0, 0, 0, 0.8); /* 背景色变暗 */
-  z-index: 1000; /* 确保模态框在最上层 */
+  transform: translateY(-50%);
+  /* 垂直居中 */
+  background-color: rgba(0, 0, 0, 0.8);
+  /* 背景色变暗 */
+  z-index: 1000;
+  /* 确保模态框在最上层 */
 }
 
 .dialog-content {
   /* 根据需要设置内部内容的样式 */
-  max-height: 100%; /* 内容的最大高度为模态框的高度 */
-  overflow: auto; /* 如果内容超出，允许滚动 */
+  max-height: 100%;
+  /* 内容的最大高度为模态框的高度 */
+  overflow: auto;
+  /* 如果内容超出，允许滚动 */
 }
 
-.dialog-footer .el-icon + .el-icon {
+.dialog-footer .el-icon+.el-icon {
   margin-left: 10px;
 }
 </style>
