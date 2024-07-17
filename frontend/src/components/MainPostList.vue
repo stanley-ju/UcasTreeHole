@@ -18,46 +18,21 @@
     <el-row>
       <el-col :span="20" :offset="2">
         <div class="posts">
-          <el-input
-            v-model="keyword"
-            placeholder="请输入内容"
-            class="search-post"
-            clearable
-          >
+          <el-input v-model="keyword" placeholder="请输入内容" class="search-post" clearable>
             <template #append>
-              <el-button
-                type="primary"
-                :icon="Search"
-                @click="queryPostWithKeyword"
-              ></el-button>
+              <el-button type="primary" :icon="Search" @click="queryPostWithKeyword"></el-button>
             </template>
           </el-input>
-          <Post
-            v-for="post in postList"
-            :postId="post.postId"
-            :senderId="post.senderId"
-            :sendTime="post.sendTime"
-            :likeNum="post.likeNum"
-            :favourNum="post.favourNum"
-            :content="post.content"
-            :isFavour="post.isFavour"
-            :commentList="post.commentList"
-            :senderAvatar="post.senderAvatar"
-            :imageUrlList="post.imageUrlList"
-          />
+          <Post v-for="post in postList" :postId="post.postId" :senderId="post.senderId" :sendTime="post.sendTime"
+            :likeNum="post.likeNum" :favourNum="post.favourNum" :content="post.content" :isFavour="post.isFavour"
+            :commentList="post.commentList" :senderAvatar="post.senderAvatar" :imageUrlList="post.imageUrlList" />
         </div>
       </el-col>
     </el-row>
   </ul>
 
-  <el-dialog
-    v-model="isVisible"
-    title="发帖页"
-    center
-    :lock-scroll="false"
-    :close-on-click-modal="false"
-    class="post-details-dialog"
-  >
+  <el-dialog v-model="isVisible" title="发帖页" center :lock-scroll="false" :close-on-click-modal="false"
+    class="post-details-dialog">
     <SubmitPost></SubmitPost>
   </el-dialog>
 </template>
