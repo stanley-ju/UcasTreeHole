@@ -1,5 +1,5 @@
 <template>
-    <el-affix :offset="affixOffset">
+  <el-affix :offset="affixOffset">
     <el-button
       size="large"
       type="primary"
@@ -9,7 +9,8 @@
       class="submitAffix"
     />
   </el-affix>
-  <ul id = "post-list"
+  <ul
+    id="post-list"
     v-infinite-scroll="load"
     :infinite-scroll-distance="10"
     class="infinite-list"
@@ -179,7 +180,7 @@ export default defineComponent({
 
 .posts {
   background-color: rgba(255, 255, 255, 0.53);
-  margin: 12px 20px 20px 20px;
+  margin: 12px 0px 20px 0px;
   padding: 12px 20px 20px 20px;
   border-radius: 12px;
   text-align: left;
