@@ -1,5 +1,5 @@
 <template>
-  <div class="post">
+  <div class="post" @click="showDetail">
     <el-row @click="showDetail">
       <el-col :span="2">
         <el-avatar :src="updateUrl(senderAvatar)" />

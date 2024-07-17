@@ -1,8 +1,20 @@
 <template>
   <el-affix :offset="affixOffset">
-    <el-button size="large" type="primary" :icon="Plus" circle @click="showSubmit" class="submitAffix" />
+    <el-button
+      size="large"
+      type="primary"
+      :icon="Plus"
+      circle
+      @click="showSubmit"
+      class="submitAffix"
+    />
   </el-affix>
-  <ul id="post-list" v-infinite-scroll="load" :infinite-scroll-distance="10" class="infinite-list">
+  <ul
+    id="post-list"
+    v-infinite-scroll="load"
+    :infinite-scroll-distance="10"
+    class="infinite-list"
+  >
     <el-row>
       <el-col :span="20" :offset="2">
         <div class="posts">
