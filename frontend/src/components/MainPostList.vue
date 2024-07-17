@@ -143,7 +143,7 @@ export default defineComponent({
 
 .posts {
   background-color: rgba(255, 255, 255, 0.53);
-  margin: 12px 20px 20px 20px;
+  margin: 12px 0px 20px 0px;
   padding: 12px 20px 20px 20px;
   border-radius: 12px;
   text-align: left;

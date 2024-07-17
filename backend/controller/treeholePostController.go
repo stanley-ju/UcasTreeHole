@@ -3,6 +3,7 @@ package controller
 import (
 	"backend/common"
 	"backend/model"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -414,6 +415,8 @@ func queryStudentInfo(stuNum string) string {
 	user := model.StudentInfo{
 		StudentNumber: stuNum,
 	}
-	db.First(&user)
+	db.Where("student_number = ?", stuNum).Find(&user)
+
+	fmt.Println("user and avatar", stuNum, user.AvatarURL)
 	return user.AvatarURL
 }
